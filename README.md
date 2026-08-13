@@ -36,6 +36,22 @@ That does not stop you working:
   folder alongside this one. Ask Rafa for it if you need to re-extract project
   copy or re-encode images.
 
+## Deploying
+
+Vercel, connected to this repo. Import it once and every push to `main`
+redeploys.
+
+1. <https://vercel.com/new> → import `rafxaa/newstreet-v4`
+2. Set **Root Directory** to `newstreet-v4` — the Astro project is a subfolder
+3. Leave the rest alone. `vercel.json` already overrides the build command to
+   `npx astro build`, which matters: Vercel's default is `npm run build`, and
+   that regenerates data and images from the V3 archive this repo does not
+   contain. Without the override the build fails on missing sources.
+4. Add `RESEND_API_KEY` under Settings → Environment Variables, or the contact
+   form deploys in its error state.
+
+The first build gives a `*.vercel.app` URL that is shareable immediately.
+
 ## Where things live
 
 | Path | What it is |
