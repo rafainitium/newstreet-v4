@@ -15,10 +15,23 @@ permissions:
   pages: write
   id-token: write
 
-# One deploy at a time; a push mid-run supersedes rather than queues.
+# QUEUE, DO NOT CANCEL. This was `cancel-in-progress: true`, which cancels the
+# workflow RUN but cannot recall the Pages DEPLOYMENT that run has already
+# created. The deployment stays open on GitHub's side, and the next run's deploy
+# step is then rejected outright:
+#
+#   Deployment request failed … due to in progress deployment.
+#   Please cancel <sha> first or wait for it to complete.
+#
+# It also explains a partial rollout seen earlier, where the site served its
+# homepage but 404'd every subpage: a deployment cancelled midway had published
+# the root and never finished the rest.
+#
+# Pages deployments are not interruptible, so pushes queue behind each other.
+# One extra build is cheaper than a broken deploy.
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:
