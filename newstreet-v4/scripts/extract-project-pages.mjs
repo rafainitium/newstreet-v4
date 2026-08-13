@@ -132,7 +132,7 @@ const SUMMARY_OVERRIDES = {
     'An office-to-residential conversion, where commercial floor plates yield expansive layouts and oversized private terraces that new construction on a Gold Coast parcel could not economically deliver. With the CTA Red Line at the door, the result has little direct competition in the submarket.',
   ],
   '200WO': [
-    '200 W Ohio is a five-story mixed-use multifamily development at 320 W Ohio Street in River North, Chicago. The project includes 48 total units, 4,800 square feet of ground-floor retail, and select residential amenities.',
+    '200 W Ohio is a five-story mixed-use multifamily development at 200 W Ohio Street in River North, Chicago. The project includes 48 total units, 4,800 square feet of ground-floor retail, and select residential amenities.',
     'Retail runs the length of the Wells Street frontage, where the foot traffic is and where the storefronts carry the most visibility. Residences sit above, with amenities extending onto a landscaped outdoor terrace.',
   ],
   /* Keys, not units: there is no residential count here, and the template's
@@ -168,14 +168,14 @@ const SUMMARY_OVERRIDES = {
 /**
  * ADDRESS OVERRIDES — where V3's page prints the wrong street number.
  *
- * The address is extracted from V3, which is right for eight of the nine and
- * wrong here: the firm gives 320 W Ohio St. Corrected at the source of truth
- * rather than in the page, so the hero, the summary, and anything that reads
- * `address` later all move together.
+ * Empty, and the empty map is the note: 200 W Ohio briefly carried an override
+ * to 320 W Ohio St. That address is the FIRM'S OFFICE, not this project's, and
+ * it belongs in the footer and on the contact page where it now sits. Applied
+ * here it put the project at a number a block and a half from the corner its
+ * own name, its V3 title ("Ohio & Wells"), and its retail frontage all
+ * describe.
  */
-const ADDRESS_OVERRIDES = {
-  '200WO': '320 W Ohio St',
-};
+const ADDRESS_OVERRIDES = {};
 
 const detail = {};
 const problems = [];
