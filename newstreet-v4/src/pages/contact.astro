@@ -98,10 +98,6 @@ const inquiryTypes = [
           info@newst.com <span class="action-link__arrow">→</span>
         </a>
 
-        <p class="meta contact__note">
-          We answer every enquiry ourselves — there is no queue and no auto-responder.
-          Expect a reply within two business days.
-        </p>
       </div>
 
       <div class="grid__main">
@@ -196,10 +192,8 @@ const inquiryTypes = [
   .contact__email {
     margin-top: var(--s-md);
   }
-  .contact__note {
-    margin-top: var(--s-lg);
-    max-width: 34ch;
-  }
+  /* `.contact__note` was here — the reply-time promise beneath the address.
+     Removed with it rather than left unused. */
 
   /* ---- Form -------------------------------------------------
      The objects are in base.css; only the rhythm is this page's. */
