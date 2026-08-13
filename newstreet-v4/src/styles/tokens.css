@@ -53,6 +53,19 @@
 
   --track-label: 0.18em;
   --measure: 68ch;
+  /* ONE MEASURE FOR EVERY SECTION HEADER, stacked or paired.
+     The stacked header was capped at 46ch while the paired text column filled
+     its five grid columns, so the same 38px heading broke in different places
+     and the same 14px lede set to a different rhythm depending on which layout
+     carried it. They read as different sizes when they are the same type.
+
+     THIS IS THE PAIRED COLUMN'S OWN GEOMETRY, not a character count. A `ch`
+     value was tried and it only agrees at one viewport: the paired column is
+     five tracks of a fluid 12-column grid, so at 1600 it measured 578px and a
+     60ch cap matched it exactly — while at 1100 the column was 397px and the
+     fixed cap was still 578. Expressed as tracks, the two are equal at every
+     width by construction. Five columns and the four gaps between them. */
+  --measure-header: calc((100% - 11 * var(--s-lg)) / 12 * 5 + 4 * var(--s-lg));
 
   /* --- Space ------------------------------------------------- */
   --s-hair: 4px;
