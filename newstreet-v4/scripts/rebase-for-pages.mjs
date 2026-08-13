@@ -4,7 +4,8 @@
  *
  * WHY THIS IS A POST-BUILD STEP AND NOT `base` IN astro.config.
  *
- * The site's real home is `https://www.newst.com`, at the root of its domain.
+ * The site is written to be served from the root of a domain, and this build is
+ * a test preview living in a subdirectory instead.
  * Every link in the source is written from that root — `/portfolio`,
  * `/img/...`, `url(/fonts/...)` — and that is correct. Astro's `base` option
  * would rewrite the handful of URLs Astro itself generates, and leave all the

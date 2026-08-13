@@ -10,7 +10,28 @@ const {
   transparentNav = false,
 } = Astro.props;
 
-const canonical = new URL(Astro.url.pathname, Astro.site);
+/**
+ * THIS BUILD IS A TEST SITE AND SAYS SO IN ITS HEAD.
+ *
+ * It is a redesign of newst.com being iterated on by the external media team,
+ * and it carries most of that site's copy. Published without care that is a
+ * second public copy of the firm's content: it competes with the live site in
+ * search, and it can be found and read as though it were the real thing.
+ *
+ * Two things follow, and both key off whether `site` is set in astro.config:
+ *
+ *   unset (now)  — no canonical, no `og:url`, and `noindex, nofollow`. The
+ *                  build names no domain at all and asks every crawler to
+ *                  leave it alone.
+ *   set (later)  — canonical and `og:url` are emitted against it and the
+ *                  robots tag drops away. That is the switch to flip when this
+ *                  becomes the real site; nothing else here changes.
+ *
+ * It previously read `site: 'https://www.newst.com'`, so every page of the
+ * preview emitted a canonical pointing at the live site — telling search
+ * engines the live domain was the true home of these very pages.
+ */
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site) : null;
 ---
 
 <!doctype html>
@@ -21,12 +42,13 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
+    {canonical && <link rel="canonical" href={canonical} />}
+    {!canonical && <meta name="robots" content="noindex, nofollow" />}
 
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content={canonical} />
+    {canonical && <meta property="og:url" content={canonical} />}
     <meta property="og:site_name" content="Newstreet" />
     <meta name="twitter:card" content="summary_large_image" />
 

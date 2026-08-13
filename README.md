@@ -1,6 +1,13 @@
 # Newstreet — V4
 
-The Newstreet Developments website, rebuilt in Astro. `newstreet-v4/` is the site;
+**A test build.** This is a redesign of newst.com, iterated on by the external
+media team before anything goes near the live site. It is not the live site and
+must not present itself as one: `site` is deliberately unset in
+`astro.config.mjs`, so every page ships `noindex, nofollow` and no canonical
+URL. Setting `site` to a real origin turns both back on — that is the switch to
+flip on launch, and nothing else changes.
+
+`newstreet-v4/` is the site;
 `PRODUCT.md` and `DESIGN.md` govern what it says and how it looks, and they are
 meant to be read before changing either.
 
@@ -51,6 +58,15 @@ redeploys.
    form deploys in its error state.
 
 The first build gives a `*.vercel.app` URL that is shareable immediately.
+
+### GitHub Pages (what is live now)
+
+<https://rafxaa.github.io/newstreet-v4/> — rebuilt on every push to `main` by
+`.github/workflows/pages.yml`. Pages serves from a subdirectory, so the workflow
+runs `scripts/rebase-for-pages.mjs` over the built output to move every
+root-absolute path under it. The source stays root-relative; only the preview is
+adjusted. Note the contact form cannot work here — Pages is static, so there is
+no serverless runtime for `api/contact.js`.
 
 ## Where things live
 
