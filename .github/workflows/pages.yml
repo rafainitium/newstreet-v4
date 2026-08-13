@@ -1,0 +1,61 @@
+name: Deploy to GitHub Pages
+
+# Preview hosting for the team. Production is a separate concern — the site is
+# written to live at the root of newst.com, and this workflow adapts the built
+# output to a subdirectory rather than changing the source. See
+# newstreet-v4/scripts/rebase-for-pages.mjs.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time; a push mid-run supersedes rather than queues.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: newstreet-v4
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: newstreet-v4/package-lock.json
+
+      - run: npm ci
+
+      # NOT `npm run build` — that regenerates data and images from the V3
+      # archive, which is deliberately not in this repo. The committed
+      # derivatives and extracted data are what this builds from.
+      - run: npx astro build
+
+      # Pages serves this repo at /<repo>/, so every root-absolute path in the
+      # output is rewritten to sit under it.
+      - run: node scripts/rebase-for-pages.mjs "/${GITHUB_REPOSITORY#*/}"
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: newstreet-v4/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
