@@ -133,13 +133,21 @@ const formatDate = (iso) =>
     </div>
   </section>
 
-  <!-- ===== Featured work ==================================== -->
-  <section class="band band--paper" aria-labelledby="portfolio-heading">
+  <!-- ===== Featured work ====================================
+       NO HEADING, ONLY THE KICKER AND THE WAY OUT. The heading here
+       named what the cards beneath it already show, which is the
+       same reason the portfolio index carries none of its own. The
+       kicker names the division and "All projects" carries the
+       reader to the full record; the work is the content.
+
+       `aria-label` on the section rather than `aria-labelledby` —
+       there is no heading left to point at, and a landmark with a
+       dangling reference is announced unnamed. -->
+  <section class="band band--paper" aria-label="Featured work">
     <div class="band__inner">
       <div class="section-header rise">
         <div class="section-header__text">
           <span class="kicker">Our Work</span>
-          <h2 id="portfolio-heading" class="display">A selection from the portfolio</h2>
         </div>
         <a class="action-link section-header__action" href="/portfolio">
           All projects <span class="action-link__arrow">→</span>
