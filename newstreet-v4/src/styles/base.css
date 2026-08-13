@@ -1,0 +1,1034 @@
+/* ============================================================
+   BASE — document grammar.
+
+   Rules are HORIZONTAL ONLY. A hairline marks a band edge, the
+   foot of a section header, and the gap between list rows.
+   Vertical rules between columns are banned — they turn a page
+   into a table grid, which is what made the first pass an
+   eyesore. Columns are held apart by space alone.
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-size: var(--size-body);
+  line-height: 1.62;
+  font-synthesis-weight: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+/* Photo emits real width/height attributes so the browser can reserve space and
+   avoid layout shift. `height: auto` lets a CSS aspect-ratio override the
+   attribute's implied ratio — without it the image renders at its source height. */
+img {
+  height: auto;
+}
+
+/* The picture element is a wrapper for format negotiation, not a layout box.
+   Collapsing it keeps every existing selector pointing at the image itself. */
+picture {
+  display: contents;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+.u-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- Band: the structural unit ----------------------- */
+
+.band {
+  padding: var(--band) var(--gutter);
+  /* A hairline sits on the color break, marking the section edge. */
+  border-top: 1px solid var(--rule);
+}
+.band--paper {
+  background: var(--paper);
+}
+.band--tint {
+  background: var(--paper-band);
+}
+.band--dark {
+  background: var(--dark);
+  color: var(--on-dark);
+  border-top-color: var(--rule-on-dark);
+}
+/* The hero supplies its own edge. */
+.band--flush-top {
+  border-top: 0;
+}
+
+/* NAV CLEARANCE, DECIDED BY THE LAYOUT RATHER THAN BY THE PAGE.
+   The nav is fixed. A page opening on a hero passes under it by design; a page
+   opening on a band would start beneath it, so its first band clears the bar.
+   `Base` sets this class whenever the nav is solid, which is exactly the case
+   where there is no hero — so a new page cannot forget it. This was a
+   page-scoped override in portfolio.astro, and the next page without a hero
+   (team) duly shipped 58px too high. */
+.main--solid-nav > .band:first-child {
+  padding-top: calc(var(--band) + var(--nav-height));
+}
+
+/* THE SAME CLEARANCE, FOR A BAND ARRIVED AT BY ANCHOR. A fragment link scrolls
+   its target to viewport 0, which on a site with a fixed bar puts the first
+   58px of that band — its kicker, and the top of its heading — underneath the
+   nav. Every anchor destination here is a band (`#lifecycle`, `#request`,
+   `#advantage`, `#contact`), so the rule belongs to the band and not to the
+   four links that happen to point at one. Read off the same token the layout
+   clearance uses, so a change to the bar height cannot leave the two
+   disagreeing. */
+.band[id] {
+  scroll-margin-top: var(--nav-height);
+}
+
+.band__inner {
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+/* ---------- Page hero ---------------------------------------
+   Half height, for every page that is not the home page or a
+   project. The image states the page and gets out of the way;
+   the argument is in the bands below.
+
+   THE CAPTION SITS ON THE GUTTER, deliberately, and does NOT
+   track `band__inner`. The hero is full-bleed, so its type belongs
+   on the viewport's own edge — pulling it in to the 1440 container
+   was tried and it killed the hero. The consequence is that on
+   displays wider than 1440 + two gutters the caption sits left of
+   the content below it. That is accepted. */
+
+.hero--half {
+  position: relative;
+  height: 58vh;
+  height: 58svh;
+  min-height: 420px;
+  max-height: 660px;
+  overflow: hidden;
+  background: var(--dark);
+}
+.hero--half .hero__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* NO HERO ROTATES. The cross-fading multi-frame hero lived here and its
+   behaviour in Base.astro; the home hero moved to film and the portfolio hero
+   to a still, and a shared device with no callers is weight on every page that
+   loads the stylesheet. Restoring it means restoring both halves together —
+   the CSS below the fold of this comment and the loop in the layout — not one
+   of them. Heroes now carry exactly one frame. */
+
+/* Weighted top and bottom only — for the nav and the caption. The lower stop
+   covers the caption's full height: white type over a sunlit facade is not
+   legible on the strength of the type alone.
+
+   THE 56% STOP IS THE CAPTION'S TOP EDGE, and it is why this is four stops and
+   not three. A straight 34%→100% ramp is weakest exactly where the caption
+   begins: measured, the kicker sat on 0.43 of a scrim that only reaches full
+   strength at the very bottom of the frame, which is below the caption, not
+   under it. The caption is bottom-anchored at a fixed offset, so it starts
+   around 56% of the shortest hero and lower on a tall one — 56% is the early
+   case, and holding the ramp there covers both. */
+.hero--half::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.46) 0%,
+    rgba(0, 0, 0, 0) 30%,
+    rgba(0, 0, 0, 0) 34%,
+    rgba(0, 0, 0, 0.6) 56%,
+    rgba(0, 0, 0, 0.88) 100%
+  );
+}
+
+.hero__caption {
+  position: absolute;
+  left: var(--gutter);
+  right: var(--gutter);
+  bottom: var(--s-xl);
+  z-index: 1;
+  color: #fff;
+}
+/* SCOPED TO THE CAPTION SO THEY WIN ON SPECIFICITY, NOT ON ORDER.
+   These were `.hero__kicker` and `.hero__credit` — one class each, the same
+   weight as the `.kicker` base rule that is declared further down this file.
+   Later rule wins at equal specificity, so every page hero was drawing its
+   kicker in `--ink-faint` (#8a8a8a, a grey meant for paper) and the white
+   authored here never applied anywhere. Measured on /portfolio that was
+   1.68:1 — invisible, and a WCAG failure on six routes at once.
+   `.band--dark .kicker` already carries the two-class weight for exactly this
+   reason; the hero caption is the same situation and now matches it. */
+.hero__caption .hero__kicker {
+  color: rgba(255, 255, 255, 0.78);
+}
+.hero__title {
+  margin-top: var(--s-sm);
+  max-width: 20ch;
+  color: #fff;
+}
+/* `.hero__credit` was here and is gone with the last credit line. Every hero on
+   this site is city photography — atmosphere, not a dated and located record —
+   and the site's own rule is that atmosphere does not earn a caption. What the
+   frame actually is still gets said, in the alt text, where it belongs. The
+   rule is dropped rather than kept unused so a future hero cannot quietly pick
+   the convention back up. */
+
+@media (max-width: 640px) {
+  .hero--half {
+    height: 52svh;
+    min-height: 360px;
+  }
+  .hero__caption {
+    bottom: var(--s-lg);
+  }
+}
+
+/* ---------- Section header ----------------------------------
+   Used when the section carries full-width content below it.
+   Kicker, heading, and intro stack together on the left so the
+   header shares an edge with the content it introduces — a
+   split header over a full-width grid reads as a mismatch. */
+
+.section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--s-xl);
+  padding-bottom: var(--s-lg);
+  border-bottom: 1px solid var(--rule);
+}
+.band--dark .section-header {
+  border-bottom-color: var(--rule-on-dark);
+}
+
+/* ONE RULE PER EDGE.
+   A header closes with a hairline, and that hairline is the opening
+   edge of whatever comes next — the set does not draw its own. Two
+   rules with nothing between them read as a stutter, not a boundary;
+   the eye looks for content in the gap and finds none. So the bounded
+   sets that open with a hairline on their own — .disclose, a row list,
+   a rail — drop it when a header is already holding that edge. Their
+   closing rule stays: the bottom of the set is still an edge that
+   nothing else is marking. */
+.section-header + * {
+  border-top: 0;
+}
+
+.section-header__text {
+  max-width: 46ch;
+}
+.section-header .kicker {
+  margin-bottom: var(--s-md);
+}
+.section-header .prose {
+  margin-top: var(--s-md);
+}
+.section-header__action {
+  flex: none;
+  padding-bottom: 4px;
+}
+
+/* A header carrying only a kicker — no heading beneath it to space away from. */
+.section-header--compact .kicker {
+  margin-bottom: 0;
+}
+
+/* ---------- Grid --------------------------------------------
+   Text sits well right of center. The open middle is the
+   composition; it is not empty by accident. */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--s-lg);
+}
+
+.grid__kicker {
+  grid-column: 1 / 4;
+}
+.grid__main {
+  grid-column: 6 / 13;
+}
+.grid__half {
+  grid-column: 6 / 11;
+}
+/* Prose spaces away from the heading above it, and from itself. */
+.grid__main > .prose,
+.grid__half > .prose {
+  margin-top: var(--s-md);
+}
+/* A split may close on an action, and it stands off the prose at the same
+   distance it does in a paired section — the two objects are the same layout
+   with the left column filled or empty, so a link cannot sit differently in
+   one than the other. Added when the home introduction and leadership moved
+   from paired to split; until then no split had carried a link. */
+.grid__main > .action-link,
+.grid__half > .action-link {
+  margin-top: var(--s-lg);
+}
+
+/* ---------- Paired: image and text side by side --------------
+   The split layout with its open left column filled. Defined once
+   so no two paired sections can drift apart — if a section needs
+   an image beside its text, it uses this and nothing else. */
+
+.paired {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--s-lg);
+  align-items: center;
+}
+.paired__figure {
+  grid-column: 1 / 7;
+}
+.paired__figure img {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+}
+/* A portrait figure keeps its own height rather than being cropped to the
+   landscape default. Used where the subject IS vertical — a tower, a facade —
+   and the tall frame is the point rather than an accident of the source. */
+.paired--portrait .paired__figure img {
+  aspect-ratio: 3 / 4;
+}
+
+/* Optional. A figure earns a caption when the image is documentary —
+   a dated, located record — and not when it is atmosphere. */
+.paired__caption {
+  margin-top: var(--s-sm);
+}
+/* Text sits two columns clear of the image; the gap is the composition. */
+.paired__text {
+  grid-column: 8 / 13;
+}
+.paired__text .display {
+  margin-top: var(--s-md);
+}
+.paired__text .prose {
+  margin-top: var(--s-md);
+}
+.paired__text .action-link {
+  margin-top: var(--s-lg);
+}
+
+@media (max-width: 900px) {
+  .paired__figure,
+  .paired__text {
+    grid-column: 1 / 13;
+  }
+  .paired__text {
+    margin-top: var(--s-lg);
+  }
+}
+
+/* ---------- Projects grid: any index of work -----------------
+   Three columns of equal weight, held apart by gap alone. The
+   home page's featured set and the portfolio index are the same
+   object at the same size — defined here so they cannot drift.
+   Cards are ProjectCard; this file owns only the geometry. */
+
+.projects {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-xl) var(--s-lg);
+  margin-top: var(--s-xl);
+}
+
+/* The empty grid still contributes its own top margin, so the message
+   adds none of its own. */
+.projects__empty {
+  color: var(--ink-faint);
+}
+
+/* ---------- Columns: a set of peers --------------------------
+   An unnumbered set — the Newstreet difference, the investment
+   principles. Column count is set by the section; the object is
+   the rhythm, not the count. */
+
+.columns {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--s-xl) var(--s-lg);
+  margin-top: var(--s-xl);
+}
+.columns--3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+/* Two-up. The set governs the count, not the grid: a pair left in a three
+   column track reads as a missing third rather than as a pair. `.prose` is
+   capped at `--measure`, so the wider column costs no line length. */
+.columns--2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+.columns .prose {
+  margin-top: var(--s-sm);
+}
+
+/* ---------- Phases: a set in order ---------------------------
+   Numbered, because the sequence IS the information — that is the
+   only thing separating this object from .columns. Shared by the
+   home summary and the investors page so six phases cannot drift
+   into two different six phases. */
+
+.phases {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: calc(var(--s-xl) * 1.2) var(--s-lg);
+  margin-top: var(--s-xl);
+  list-style: none;
+}
+.phases__num {
+  display: block;
+  margin-bottom: var(--s-sm);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-faint);
+}
+.band--dark .phases__num {
+  color: var(--on-dark-soft);
+}
+.phases .prose {
+  margin-top: var(--s-sm);
+}
+
+/* ---------- Type ------------------------------------------- */
+
+.kicker {
+  display: block;
+  font-size: var(--size-label);
+  font-weight: 500;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  line-height: 1.4;
+}
+.band--dark .kicker {
+  color: var(--on-dark-soft);
+}
+
+.display {
+  font-family: var(--font-display);
+  font-size: var(--size-display);
+  font-weight: 400;
+  line-height: 1.18;
+  letter-spacing: -0.005em;
+  text-wrap: balance;
+}
+.display--sm {
+  font-size: var(--size-display-sm);
+  line-height: 1.3;
+}
+/* Page heroes only — the one heading allowed to outrun display scale. Tighter
+   leading and tracking, because the size carries the emphasis on its own. */
+.display--lg {
+  font-size: var(--size-display-lg);
+  line-height: 1.06;
+  letter-spacing: -0.018em;
+}
+
+.prose {
+  max-width: var(--measure);
+  color: var(--ink-soft);
+}
+.band--dark .prose {
+  color: var(--on-dark-soft);
+}
+.prose + .prose {
+  margin-top: var(--s-md);
+}
+
+.meta {
+  font-size: var(--size-body-sm);
+  color: var(--ink-faint);
+}
+
+/* ---------- Actions ---------------------------------------- */
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-sm);
+  padding: 18px 32px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: var(--size-label);
+  font-weight: 500;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  line-height: 1;
+  transition: background 0.35s var(--ease-out);
+}
+.action:hover {
+  background: var(--ink-hover);
+}
+/* Inverted on dark grounds — the action is always the highest-contrast
+   element available, which in a monochrome system means flipping it. */
+.band--dark .action {
+  background: var(--paper);
+  color: var(--ink);
+}
+.band--dark .action:hover {
+  background: var(--on-dark-soft);
+}
+.action__arrow {
+  transition: transform 0.35s var(--ease-out);
+}
+.action:hover .action__arrow {
+  transform: translateX(4px);
+}
+
+.action-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-xs);
+  font-size: var(--size-label);
+  font-weight: 500;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  line-height: 1;
+  color: var(--ink);
+  opacity: 1;
+  transition: opacity 0.3s var(--ease-out);
+}
+.action-link:hover {
+  opacity: 0.6;
+}
+.band--dark .action-link {
+  color: var(--on-dark);
+}
+.action-link__arrow {
+  transition: transform 0.35s var(--ease-out);
+}
+.action-link:hover .action-link__arrow {
+  transform: translateX(3px);
+}
+
+/* ---------- Ledger: the figure display ----------------------
+   Columns held apart by space, not by rules. */
+
+.ledger__row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--s-lg);
+}
+
+.ledger__value {
+  font-family: var(--font-display);
+  font-size: var(--size-figure);
+  line-height: 1;
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: -0.01em;
+}
+.ledger__label {
+  margin-top: var(--s-md);
+  font-size: var(--size-label);
+  font-weight: 500;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+.ledger__note {
+  margin-top: var(--s-xl);
+  font-size: var(--size-body-sm);
+  color: var(--ink-faint);
+  max-width: 52ch;
+}
+
+/* ---------- List: press, news, any dated index --------------
+   Rows read as separate typographic units. Rhythm comes from
+   leading and a hover ground, never from a rule. */
+
+.list__row {
+  display: grid;
+  grid-template-columns: 200px 1fr auto;
+  gap: var(--s-lg);
+  /* CENTRED, NOT BASELINE. The source is two lines — date over outlet — and the
+     headline is usually one. On a shared baseline the date lines up with the
+     headline and the outlet hangs below it, so the left column reads as sitting
+     low against a headline it belongs beside. Baseline alignment is right when
+     the cells are all single lines of text; here one cell is a block and the
+     row should centre it. The arrow comes with it, which is where it wanted to
+     be anyway. */
+  align-items: center;
+  padding: var(--s-md);
+  margin-inline: calc(var(--s-md) * -1);
+  border-bottom: 1px solid var(--rule);
+  transition: background 0.3s var(--ease-out);
+}
+.list__row:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.list__source {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.list__date,
+.list__outlet {
+  font-size: var(--size-label);
+  font-weight: 500;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+.list__date {
+  color: var(--ink-faint);
+}
+.list__outlet {
+  color: var(--ink-soft);
+}
+.list__title {
+  font-family: var(--font-display);
+  font-size: var(--size-display-sm);
+  line-height: 1.3;
+  color: var(--ink);
+}
+.list__arrow {
+  color: var(--ink-faint);
+  transition: transform 0.35s var(--ease-out), color 0.35s var(--ease-out);
+}
+.list__row:hover .list__arrow {
+  transform: translateX(4px);
+  color: var(--ink);
+}
+
+/* ---------- Disclosure: the one expand/collapse ------------
+   Native details/summary, never a scripted accordion: it opens
+   with no JavaScript, is keyboard operable for free, and prints
+   open. Rows are separated by hairlines and the WHOLE row is the
+   control, so the target is the full width rather than the glyph.
+
+   Defined once because a page may carry more than one — the
+   investors page runs the FAQ at question scale and the reporting
+   list at label scale — and two of these must not become two
+   different interactions. */
+
+.disclose {
+  border-top: 1px solid var(--rule);
+}
+.disclose__row {
+  border-bottom: 1px solid var(--rule);
+}
+
+.disclose__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-lg);
+  padding: var(--s-md) 0;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: var(--size-display-sm);
+  line-height: 1.3;
+  list-style: none;
+  transition: color 0.3s var(--ease-out);
+}
+/* Safari draws its own disclosure triangle unless this is set. */
+.disclose__head::-webkit-details-marker {
+  display: none;
+}
+.disclose__head:hover {
+  color: var(--ink-soft);
+}
+.disclose__head:focus-visible {
+  outline-offset: -2px;
+}
+
+/* `.disclose--compact` was here — label scale, uppercase, for the reporting
+   deliverables. Its one caller is on `--rows` now, so the site had three
+   disclosure scales for three sets that all wanted the same one. Removed
+   rather than left unused: a variant nothing calls is a variant the next
+   section picks by accident. */
+
+/* THE ROW LIST, MATCHED TO `.stages` ON THE HOME PAGE. That list is the quietest
+   set on the site — a hairline per row, the name in the text face at body size,
+   and tight padding — and it is the register these three sets wanted: the
+   underwriting criteria, the reporting groups, and the FAQ. At the default
+   display scale each row announced itself like a section heading, so a set of
+   four or six read as six headings stacked rather than as one list.
+
+   The row rhythm, the type, and the leading-zero numeral all come from
+   `.stages`. The numbers are drawn by a COUNTER rather than typed into the
+   three templates that use this: a hand-written 01–04 is a list that renumbers
+   wrong the first time a row is added in the middle, and there is no reason for
+   markup to carry a fact the order already states.
+
+   The `+`/`−` mark stays. `.stages` has none because nothing there opens; these
+   rows do, and the mark is the only thing that says so. */
+.disclose--rows {
+  counter-reset: disclose-row;
+}
+.disclose--rows .disclose__row {
+  counter-increment: disclose-row;
+}
+.disclose--rows .disclose__head {
+  font-family: var(--font-text);
+  font-size: var(--size-body);
+  font-weight: 400;
+  line-height: 1.4;
+  /* Left-packed like a `.stages` row — numeral, label, then the mark pushed
+     out to the right edge by the label's own auto margin. `space-between`
+     alone would have opened a gap between the numeral and the label. */
+  justify-content: flex-start;
+  gap: var(--s-md);
+  padding: var(--s-sm) 0;
+}
+.disclose--rows .disclose__head::before {
+  content: counter(disclose-row, decimal-leading-zero);
+  flex: none;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-faint);
+}
+.disclose--rows .disclose__head > span:first-child {
+  margin-right: auto;
+}
+.disclose--rows .disclose__body {
+  padding-bottom: var(--s-md);
+}
+
+/* NO RULES, FOR A DISCLOSURE THAT IS NOT A LIST. The hairlines above and below
+   exist to separate stacked rows and to mark where the set starts and stops —
+   they are doing that work in the FAQ, the reporting groups, and the map's
+   criteria, which are all lists. A single row sitting inside a card has no set
+   to bound, so the same two lines just draw a box around one control, and the
+   card's own space is already its edge. */
+.disclose--bare,
+.disclose--bare .disclose__row {
+  border: 0;
+}
+
+/* Drawn rather than typed: a "+" that becomes a "−" is one bar rotating,
+   and a glyph swap cannot rotate. */
+.disclose__mark {
+  position: relative;
+  flex: none;
+  width: 11px;
+  height: 11px;
+  margin-top: 0.35em;
+}
+.disclose__mark::before,
+.disclose__mark::after {
+  content: '';
+  position: absolute;
+  inset: 50% 0 auto 0;
+  height: 1px;
+  background: var(--ink-faint);
+}
+.disclose__mark::after {
+  transform: rotate(90deg);
+  transition: transform 0.35s var(--ease-out);
+}
+.disclose__row[open] .disclose__mark::after {
+  transform: rotate(0deg);
+}
+
+.disclose__body {
+  padding-bottom: var(--s-lg);
+  max-width: 58ch;
+}
+
+/* ---------- Form -------------------------------------------
+   A field is a LABEL OVER A RULE. No boxes: a bordered input is
+   a rectangle drawn around nothing, and this system already says
+   an edge comes from a ground change or a horizontal hairline.
+   The rule under the control is that hairline.
+
+   THE PALETTE HAS NO ERROR HUE, by brand commitment. So an error
+   is carried by weight, rule, and position instead: the rule goes
+   to full-strength ink, the label stops being faint, and a message
+   appears directly beneath the field it belongs to. Never rely on
+   color alone here, because there is no color to rely on. */
+
+.field + .field {
+  margin-top: var(--s-lg);
+}
+
+.field__label {
+  display: block;
+  font-size: var(--size-label);
+  font-weight: 500;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  line-height: 1.4;
+  color: var(--ink-faint);
+  transition: color 0.3s var(--ease-out);
+}
+
+.field__control {
+  display: block;
+  width: 100%;
+  margin-top: var(--s-xs);
+  padding: 0 0 var(--s-sm);
+  border: 0;
+  border-bottom: 1px solid var(--rule-strong);
+  border-radius: 0;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-size: var(--size-body);
+  line-height: 1.6;
+  transition: border-color 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
+}
+.field__control::placeholder {
+  color: var(--ink-faint);
+}
+/* The focused rule reads as two pixels without a border-width change —
+   border-width is a layout property and this system does not animate one. */
+.field__control:focus {
+  outline: none;
+  border-bottom-color: var(--ink);
+  box-shadow: inset 0 -1px 0 var(--ink);
+}
+.field__control:focus-visible {
+  outline: none;
+}
+
+textarea.field__control {
+  min-height: 7.5em;
+  resize: vertical;
+}
+
+/* Error: rule at full strength, label no longer faint, message beneath. */
+.field__control[aria-invalid='true'] {
+  border-bottom-color: var(--ink);
+  box-shadow: inset 0 -1px 0 var(--ink);
+}
+.field:has([aria-invalid='true']) .field__label {
+  color: var(--ink);
+}
+.field__note {
+  margin-top: var(--s-xs);
+  font-size: var(--size-body-sm);
+  font-weight: 500;
+  color: var(--ink);
+}
+
+/* ---------- Choices: a selection, shown by underline --------
+   The same device the portfolio filter uses — an underline, not
+   a filled chip. Native radios keep the keyboard behaviour and
+   the grouping for free; only the mark is ours. */
+
+.choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-lg);
+  margin-top: var(--s-md);
+}
+.choices__option {
+  cursor: pointer;
+}
+.choices__label {
+  display: inline-block;
+  padding-bottom: var(--s-hair);
+  border-bottom: 1px solid transparent;
+  font-size: var(--size-label);
+  font-weight: 500;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  line-height: 1.4;
+  color: var(--ink-faint);
+  transition: color 0.3s var(--ease-out), border-color 0.3s var(--ease-out);
+}
+.choices__option:hover .choices__label {
+  color: var(--ink-soft);
+}
+.choices__input:checked + .choices__label {
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+.choices__input:focus-visible + .choices__label {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+/* ---------- Rail control ------------------------------------
+   The square stepper a horizontal rail is paged by. Square, not
+   round — the system's stage mark and primary action are both
+   rectangles — and it inverts on hover on the same principle as
+   `.action`. At either end it disables IN PLACE rather than
+   disappearing, which would shift the pair sideways every time
+   the reader reaches an edge.
+
+   Shared because the site now has more than one rail. The project
+   gallery still carries its own copy of this and should adopt
+   this class the next time that component is touched. */
+
+.rail-btn {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--rule-strong);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--size-body);
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background 0.35s var(--ease-out),
+    color 0.35s var(--ease-out),
+    border-color 0.35s var(--ease-out),
+    opacity 0.35s var(--ease-out);
+}
+.rail-btn:hover:not(:disabled) {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+.rail-btn:disabled {
+  opacity: 0.28;
+  cursor: default;
+}
+
+/* ---------- Stage indicator: data, not decoration ---------- */
+
+.stage {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-xs);
+  font-size: var(--size-label);
+  font-weight: 500;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  line-height: 1;
+  color: var(--ink-soft);
+}
+.stage__dot {
+  width: 5px;
+  height: 5px;
+  background: var(--stage-pre);
+}
+.stage--under-construction .stage__dot {
+  background: var(--stage-construction);
+}
+.stage--completed .stage__dot {
+  background: var(--stage-completed);
+}
+
+/* ---------- Motion: one authored moment -------------------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  .rise {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.9s var(--ease-out), transform 0.9s var(--ease-out);
+  }
+  .rise.is-in {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- Responsive ------------------------------------- */
+
+@media (max-width: 1100px) {
+  .grid__main {
+    grid-column: 5 / 13;
+  }
+  .grid__half {
+    grid-column: 5 / 12;
+  }
+}
+
+@media (max-width: 900px) {
+  .grid {
+    gap: var(--s-md);
+  }
+  .grid__kicker,
+  .grid__main,
+  .grid__half {
+    grid-column: 1 / 13;
+  }
+  .grid__kicker {
+    margin-bottom: var(--s-md);
+  }
+  .list__row {
+    grid-template-columns: 1fr auto;
+    row-gap: var(--s-xs);
+  }
+  .list__source {
+    flex-direction: row;
+    gap: var(--s-sm);
+    grid-column: 1 / 3;
+  }
+  .list__title {
+    grid-column: 1 / 3;
+  }
+  .list__arrow {
+    display: none;
+  }
+  .projects {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .columns,
+  .columns--3,
+  .phases {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .ledger__row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--s-xl) var(--s-lg);
+  }
+  .projects {
+    grid-template-columns: 1fr;
+  }
+  .columns,
+  .columns--3,
+  .phases {
+    grid-template-columns: 1fr;
+  }
+}

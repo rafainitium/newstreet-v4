@@ -1,0 +1,16 @@
+# Dependencies and build output
+node_modules/
+newstreet-v4/dist/
+newstreet-v4/.astro/
+
+# THE V3 SITE IS NOT PART OF THIS REPO.
+# `NEWST V3/` is the old site, kept locally as archive material — it is where
+# most of the project photography and renders still live, and the image
+# pipeline reads from it. It is deliberately not pushed. See README.md for what
+# that means for anyone cloning this: the built derivatives in
+# `newstreet-v4/public/img/` ARE committed, so the site runs and builds without
+# it; only regenerating images and project data needs the archive.
+NEWST V3/
+
+# macOS
+.DS_Store

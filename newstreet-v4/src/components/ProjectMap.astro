@@ -1,0 +1,501 @@
+---
+/**
+ * Where the portfolio sits.
+ *
+ * Our own map, not a rented one. Leaflet renders it, the tiles come from a free
+ * provider, and every part of the chrome — markers, zoom control, attribution —
+ * is ours to style. That is the reason for building it rather than embedding
+ * Google: Google's logo, Terms link and controls cannot be restyled or removed
+ * under their ToS, and its JavaScript API bills per map load. This costs
+ * nothing, needs no API key, and no billing account.
+ *
+ * TILES ARE FORCED NEUTRAL. `filter: grayscale(1)` on the tile pane, because a
+ * basemap's water and parkland carry a faint cast that the palette does not
+ * allow. The filter guarantees it regardless of what the provider ships, and
+ * survives them changing their style without telling us.
+ *
+ * PROGRESSIVE ENHANCEMENT. The server renders MapSchematic — a real SVG map, not
+ * a spinner — and Leaflet replaces it on load. With JavaScript off or the tile
+ * host unreachable, the schematic is the map, and the section still reads.
+ */
+import MapSchematic from './MapSchematic.astro';
+import { locate, stageLabel } from '../lib/geo.js';
+
+/**
+ * `collapsible` opts the highlights into the shared disclosure object. Both
+ * routes that carry a map now use it, so the two read as one object — the
+ * criteria beside a map are the section's substance on either page, and a
+ * reader who has learned the interaction once should not meet a second kind.
+ * The flag stays a flag rather than becoming the default because the component
+ * has no way to know whether a future caller's highlights are worth hiding.
+ */
+/**
+ * `portrait` turns the square frame into a 3:4 one. It is not decoration: the
+ * Chicago assets span roughly 3.7× further north–south than east–west, strung
+ * along the lakefront, so a square wastes most of its width and leaves the
+ * markers in a thin ribbon down the middle. A tall frame fits the corridor and
+ * lets `fitBounds` zoom further in, which is what makes the submarkets legible.
+ */
+const { projects, highlights = [], collapsible = false, portrait = false } = Astro.props;
+const { all, plotted, elsewhere } = locate(projects);
+
+/* The out-of-market assets carry markers but sit outside the opening view, so
+   the caption names them — otherwise nothing on the page says they are there
+   and three assets are effectively invisible. Built from the record, so adding
+   or dropping one updates the sentence. */
+const outlyingMarkets = new Intl.ListFormat('en', { style: 'long', type: 'conjunction' }).format(
+  elsewhere.map(({ geo }) => geo.market.split(',')[0]),
+);
+
+/* Every located asset gets a marker, Nashville included. `focus` marks the ones
+   inside the Chicago frame — the map opens on those and the rest wait a zoom
+   out, rather than the whole thing opening on a view of the Midwest where no
+   individual asset reads. */
+const inFrame = new Set(plotted.map(({ project }) => project.slug));
+
+const points = all.map(({ project, geo }) => ({
+  slug: project.slug,
+  name: project.name,
+  href: project.href,
+  stage: project.stage,
+  stageLabel: stageLabel(project.stage),
+  address: geo.address ?? geo.market,
+  lat: geo.lat,
+  lng: geo.lng,
+  focus: inFrame.has(project.slug),
+}));
+---
+
+<div class:list={['paired', portrait && 'map--portrait']}>
+  <figure class="paired__figure map">
+    <div class="map__frame" data-map-frame>
+      <div class="map__canvas" data-map data-points={JSON.stringify(points)}>
+        <MapSchematic projects={projects} />
+      </div>
+      <p class="map__hint" data-map-hint hidden>Click the map to zoom</p>
+    </div>
+
+    <figcaption class="map__note meta">
+      Positions are approximate, derived from each asset's street address. The view
+      opens on Chicago;{' '}
+      {elsewhere.length > 0 && <>{outlyingMarkets} are marked too, a zoom out away.{' '}</>}
+      Undisclosed assets are not plotted.
+    </figcaption>
+  </figure>
+
+  <div class="paired__text">
+    <slot />
+
+    {
+      highlights.length > 0 && !collapsible && (
+        <dl class="map__highlights">
+          {highlights.map((item) => (
+            <div class="map__highlight">
+              <dt class="display display--sm">{item.term}</dt>
+              <dd class="prose">{item.body}</dd>
+            </div>
+          ))}
+        </dl>
+      )
+    }
+
+    {/* The shared .disclose object at its default scale — the terms keep the
+        display--sm weight they have open, they simply become the control. The
+        first is open so the set shows what a row contains. */}
+    {
+      highlights.length > 0 && collapsible && (
+        <div class="disclose disclose--rows map__disclose">
+          {highlights.map((item, i) => (
+            <details class="disclose__row" open={i === 0}>
+              <summary class="disclose__head">
+                <span>{item.term}</span>
+                <span class="disclose__mark" aria-hidden="true" />
+              </summary>
+              <p class="prose disclose__body">{item.body}</p>
+            </details>
+          ))}
+        </div>
+      )
+    }
+  </div>
+</div>
+
+<style>
+  /* Square, like everything else. The map is a figure in a column, not a
+     full-bleed band — the hero holds that role. */
+  .map__frame {
+    position: relative;
+  }
+
+  /* Leaflet promotes this very element to .leaflet-container — it does not add
+     a child — so the container's own styling belongs here, not in a descendant
+     selector that would never match.
+
+     `isolation` is load-bearing: Leaflet stacks its panes at z-index 400 and
+     its controls at 800–1000, well above the nav's 100, so on scroll the zoom
+     buttons punched straight through the navigation bar. A stacking context
+     here confines all of it, without having to fight Leaflet's own z-indexes
+     one by one. */
+  .map__canvas {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: var(--paper-band);
+    font-family: var(--font-text);
+    isolation: isolate;
+  }
+  /* The lakefront corridor's own proportion — see the `portrait` prop. Matches
+     the reporting section's figure, so the two paired sections rhyme. */
+  .map--portrait .map__canvas {
+    aspect-ratio: 3 / 4;
+  }
+
+  /* Wheel zoom is off until the map is clicked, so a scroll down the page is
+     never swallowed by a map that happens to be under the cursor. This says so,
+     and retires itself once the map is live. */
+  .map__hint {
+    position: absolute;
+    left: var(--s-sm);
+    bottom: var(--s-sm);
+    padding: 5px 9px;
+    background: rgba(255, 255, 255, 0.86);
+    color: var(--ink-soft);
+    font-size: var(--size-label);
+    font-weight: 500;
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    line-height: 1;
+    pointer-events: none;
+    transition: opacity 0.3s var(--ease-out);
+  }
+  .map__frame.is-zoomable .map__hint {
+    opacity: 0;
+  }
+  /* A position rule outranks the hidden attribute, so restate it. */
+  .map__hint[hidden] {
+    display: none;
+  }
+
+  .map__note {
+    margin-top: var(--s-sm);
+    max-width: 46ch;
+  }
+
+  /* What the map is evidence of. A dated index would take the List pattern;
+     these are positions, so they take a term-and-definition rhythm instead. */
+  .map__highlights {
+    margin-top: var(--s-lg);
+  }
+  /* Set tight: four rows of two lines each, read as a block rather than as four
+     separate statements. The hairline does the separating, so the padding does
+     not have to. */
+  .map__highlight {
+    padding: var(--s-sm) 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .map__highlight:first-child {
+    border-top: 1px solid var(--rule);
+  }
+  .map__highlight dt {
+    line-height: 1.2;
+  }
+  .map__highlight dd {
+    margin-top: var(--s-hair);
+  }
+
+  /* Only the spacing off the text above belongs here; the rows themselves are
+     the shared .disclose object in base.css. */
+  .map__disclose {
+    margin-top: var(--s-lg);
+  }
+
+  @media (max-width: 900px) {
+    .map__canvas {
+      aspect-ratio: 4 / 3;
+    }
+  }
+
+  /* ---- Leaflet -----------------------------------------------
+     Everything below styles nodes Leaflet builds at runtime, so it is
+     :global() — scoped under .map__canvas so none of it leaks. */
+
+  /* The palette holds no matter what the tile provider ships. */
+  .map__canvas :global(.leaflet-tile-pane) {
+    filter: grayscale(1);
+  }
+
+  /* Leaflet paints every anchor inside the map #0078A8, which inherits straight
+     into the markers. There is no hue anywhere on this site. */
+  .map__canvas :global(a) {
+    color: var(--ink-soft);
+  }
+
+  /* Square, flat, ink — not Leaflet's rounded white chip with a shadow. */
+  .map__canvas :global(.leaflet-control-zoom) {
+    border: 0;
+    box-shadow: none;
+  }
+  .map__canvas :global(.leaflet-control-zoom a) {
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    border: 0;
+    border-radius: 0;
+    color: var(--paper);
+    background: var(--ink);
+    font-family: var(--font-text);
+    font-size: 15px;
+    font-weight: 400;
+    transition: background 0.3s var(--ease-out);
+  }
+  .map__canvas :global(.leaflet-control-zoom a:hover) {
+    background: var(--ink-hover);
+    color: var(--paper);
+  }
+  .map__canvas :global(.leaflet-control-zoom a:first-child) {
+    margin-bottom: 1px;
+  }
+
+  /* Attribution is required by the tile licence — set quietly, never hidden. */
+  .map__canvas :global(.leaflet-control-attribution) {
+    padding: 3px 7px;
+    background: rgba(255, 255, 255, 0.82);
+    color: var(--ink-faint);
+    font-size: 10px;
+    line-height: 1.4;
+  }
+  .map__canvas :global(.leaflet-control-attribution a) {
+    color: var(--ink-soft);
+  }
+  /* Leaflet's flag mark carries the only hue the map can still produce. Leaflet
+     sets `display: inline !important` on it precisely so it cannot be hidden,
+     so it is desaturated rather than removed — the mark stays, the hue does
+     not. The OpenStreetMap and CARTO credits are required by licence. */
+  .map__canvas :global(.leaflet-attribution-flag) {
+    filter: grayscale(1);
+  }
+
+  /* ---- Marker -------------------------------------------------
+     The same square on the same value ramp as the cards and the filter. */
+
+  .map__canvas :global(.map__pin) {
+    display: block;
+    width: 0;
+    height: 0;
+  }
+  .map__canvas :global(.map__mark) {
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    width: 10px;
+    height: 10px;
+    background: var(--stage-pre);
+    box-shadow: 0 0 0 2px var(--paper);
+    transition: transform 0.35s var(--ease-out);
+  }
+  .map__canvas :global(.map__mark--under-construction) {
+    background: var(--stage-construction);
+  }
+  .map__canvas :global(.map__mark--completed) {
+    background: var(--stage-completed);
+  }
+  .map__canvas :global(.map__pin:hover .map__mark),
+  .map__canvas :global(.map__pin:focus-visible .map__mark) {
+    transform: scale(1.6);
+  }
+
+  .map__canvas :global(.map__pin-label) {
+    position: absolute;
+    /* Offsets carry the padding below, so the type lands where it always did:
+       12px clear of the mark, baseline unchanged. */
+    top: -8px;
+    right: 8px;
+    white-space: nowrap;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    line-height: 1.4;
+    color: var(--ink-soft);
+    /* A FLAT GROUND, NOT A GLOW. This held the name off the tiles with a
+       doubled paper text-shadow, which is the same soft form behind type the
+       hero just lost — and it sat oddly next to a mark that is deliberately
+       square and flat. The name gets the ground it needs as a ground: paper,
+       square, tight to the type. Same device as the mark's 2px paper ring. */
+    padding: 1px 4px;
+    background: var(--paper);
+    transition:
+      color 0.3s var(--ease-out),
+      opacity 0.3s var(--ease-out);
+  }
+
+  /* Zoomed out far enough that the Chicago assets sit within a few pixels of
+     each other, the names stack into an unreadable pile. Below the threshold
+     the marks speak alone; the name is still on the marker's aria-label. */
+  .map__canvas.is-dense :global(.map__pin-label) {
+    opacity: 0;
+  }
+  .map__canvas :global(.map__pin:hover .map__pin-label),
+  .map__canvas :global(.map__pin:focus-visible .map__pin-label) {
+    color: var(--ink);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .map__canvas :global(.map__mark) {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  import L from 'leaflet';
+  import 'leaflet/dist/leaflet.css';
+
+  const el = document.querySelector('[data-map]');
+
+  if (el instanceof HTMLElement) {
+    const points = JSON.parse(el.dataset.points || '[]');
+
+    const escape = (value) =>
+      String(value).replace(
+        /[&<>"']/g,
+        (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c],
+      );
+
+    /* The schematic held the slot until now; Leaflet needs the box empty. */
+    el.replaceChildren();
+
+    const map = L.map(el, {
+      zoomControl: true,
+      attributionControl: true,
+      /* Off until the map is engaged — see below. On touch the map does not
+         swallow the drag either; zoom there is pinch and the buttons. */
+      scrollWheelZoom: false,
+      dragging: !L.Browser.mobile,
+      tap: false,
+    });
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      subdomains: 'abcd',
+      maxZoom: 19,
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> ' +
+        '&copy; <a href="https://carto.com/attributions">CARTO</a>',
+    }).addTo(map);
+
+    const markers = points.map((point) => {
+      const tag = point.href ? 'a' : 'span';
+      const href = point.href ? ` href="${escape(point.href)}"` : '';
+
+      return {
+        point,
+        marker: L.marker([point.lat, point.lng], {
+          keyboard: true,
+          title: `${point.name} — ${point.address} — ${point.stageLabel}`,
+          icon: L.divIcon({
+            className: 'map__pin-icon',
+            iconSize: [0, 0],
+            iconAnchor: [0, 0],
+            html:
+              `<${tag} class="map__pin"${href} aria-label="${escape(
+                `${point.name}, ${point.address} — ${point.stageLabel}`,
+              )}">` +
+              `<span class="map__mark map__mark--${escape(point.stage)}"></span>` +
+              `<span class="map__pin-label">${escape(point.name)}</span>` +
+              `</${tag}>`,
+          }),
+        }),
+      };
+    });
+
+    /* Below this the Chicago assets are a few pixels apart and their names
+       overlap into a smear. Marks only, until the map can carry the type. */
+    const LABEL_MIN_ZOOM = 12;
+    const syncLabels = () => el.classList.toggle('is-dense', map.getZoom() < LABEL_MIN_ZOOM);
+
+    map.on('zoomend', syncLabels);
+
+    /* Frame the Chicago assets among those shown. Fitting the out-of-market ones
+       too would open on a view of the Midwest in which no single asset is
+       legible — they keep their markers and are a zoom out away, and the caption
+       names them so nobody has to go looking blind. */
+    const frameOn = (shown) => {
+      const focused = shown.filter((p) => p.focus);
+      const opening = focused.length > 0 ? focused : shown;
+
+      if (opening.length > 1) {
+        map.fitBounds(
+          opening.map((p) => [p.lat, p.lng]),
+          { padding: [56, 56] },
+        );
+      } else if (opening.length === 1) {
+        map.setView([opening[0].lat, opening[0].lng], 15);
+      }
+      syncLabels();
+    };
+
+    /* The map answers to the same filters as the grid. Showing every asset while
+       the grid is filtered to Investments would put the map and the list it sits
+       under in plain contradiction. */
+    const applyFilter = (slugs) => {
+      const next = slugs ? new Set(slugs) : null;
+      const isShown = (point) => !next || next.has(point.slug);
+
+      for (const { point, marker } of markers) {
+        const on = isShown(point);
+        if (on && !map.hasLayer(marker)) marker.addTo(map);
+        else if (!on && map.hasLayer(marker)) marker.remove();
+      }
+
+      const shown = points.filter(isShown);
+      if (shown.length > 0) frameOn(shown);
+    };
+
+    /* Read the grid directly on load rather than waiting to be told, so the map
+       is correct no matter which of the two scripts runs first. */
+    const slugsFromGrid = () => {
+      const cards = document.querySelectorAll('[data-grid] .project[data-slug]:not([hidden])');
+      return cards.length > 0 ? [...cards].map((card) => card.dataset.slug) : null;
+    };
+
+    applyFilter(slugsFromGrid());
+
+    document.addEventListener('portfolio:filter', (event) => {
+      applyFilter(event.detail?.slugs ?? null);
+    });
+
+    /* Wheel and trackpad zoom, without hijacking the page.
+     *
+     * Always-on scroll zoom traps the reader: they scroll down the portfolio,
+     * the cursor crosses the map, and the page stops moving while the map zooms
+     * instead. So the map has to be engaged first — a click, or a keyboard
+     * focus — and it stands down again when the pointer leaves. Once engaged,
+     * the wheel and two-finger trackpad zoom work normally inside it.
+     */
+    const frame = document.querySelector('[data-map-frame]');
+    const hint = document.querySelector('[data-map-hint]');
+
+    if (hint instanceof HTMLElement) hint.hidden = false;
+
+    const engage = () => {
+      if (map.scrollWheelZoom.enabled()) return;
+      map.scrollWheelZoom.enable();
+      frame?.classList.add('is-zoomable');
+    };
+
+    const standDown = () => {
+      if (!map.scrollWheelZoom.enabled()) return;
+      map.scrollWheelZoom.disable();
+      frame?.classList.remove('is-zoomable');
+    };
+
+    el.addEventListener('click', engage);
+    el.addEventListener('focusin', engage);
+    el.addEventListener('mouseleave', standDown);
+
+    /* Leaving by keyboard counts too, but focus moving between markers inside
+       the map does not. */
+    el.addEventListener('focusout', (event) => {
+      if (!el.contains(event.relatedTarget)) standDown();
+    });
+  }
+</script>

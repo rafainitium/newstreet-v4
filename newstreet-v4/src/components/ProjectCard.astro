@@ -1,0 +1,177 @@
+---
+/**
+ * Project card — the only way a project is represented in an index.
+ *
+ * Image at 4:5, name at display scale, location, stage dot. Nothing else:
+ * per-project figures (stories, units, sq ft) and the fund tag belong on the
+ * project page. Defined once so the home page's featured set and the portfolio
+ * index cannot drift into two lookalike patterns doing the same job.
+ *
+ * The card is NOT one large anchor. The name carries the link and its ::after
+ * covers the card, so hovering anywhere runs the name's rule and the card has
+ * exactly one link — which also leaves room for a second one later without
+ * nesting anchors, if the location ever gets a destination of its own.
+ *
+ * A project with no `href` is a placeholder: an asset the firm holds whose
+ * address it has not released. It renders as a card with no link at all, but
+ * with the same hover as every other card — it is a real asset, and a dead
+ * tile in a live grid reads as a broken one.
+ *
+ * `sizes` must match the slot the card is placed in — the default is the
+ * three-column grid both indexes use.
+ */
+import Photo from './Photo.astro';
+import crops from '../data/crops.json';
+import manifest from '../data/images.json';
+import { stageLabel as labelFor } from '../lib/project.js';
+
+const {
+  project,
+  sizes = '(max-width: 640px) 100vw, (max-width: 900px) 50vw, 31vw',
+  ...rest
+} = Astro.props;
+
+const stageLabel = labelFor(project.stage);
+
+/**
+ * A HAND-CROPPED FRAME WINS OVER A DECLARED CROP.
+ *
+ * `assets/cards/<slug>.<ext>` is a frame cut to 4:5 by hand. When one exists
+ * the card uses it as delivered — no `object-position`, no zoom — because the
+ * framing decision was already made in the file, and re-cropping a cropped
+ * frame is how a deliberate composition gets undone.
+ *
+ * Matched on the slug rather than declared in a list, so dropping the file in
+ * is the whole step. Extension is whatever was uploaded.
+ */
+const cardOverride = Object.keys(manifest).find((key) =>
+  key.startsWith(`cards/${project.slug}.`),
+);
+
+/* Art direction, not data: each render frames its building differently, so the
+   crop is declared per project to bring rooflines and mass into agreement.
+   Only consulted when no hand-cropped frame has been supplied. */
+const crop = cardOverride ? {} : crops[project.slug] ?? {};
+
+---
+
+<div
+  class:list={['project', !project.href && 'project--placeholder']}
+  style={[
+    crop.scale && `--crop-scale:${crop.scale}`,
+    crop.position && `--crop-origin:${crop.position}`,
+  ]
+    .filter(Boolean)
+    .join(';') || undefined}
+  {...rest}
+>
+  <div class="project__frame">
+    <Photo
+      class="project__img"
+      src={cardOverride ?? decodeURIComponent(project.image)}
+      alt={project.name}
+      sizes={sizes}
+      position={crop.position}
+    />
+  </div>
+
+  <div class="project__body">
+    <h3 class="display">
+      {project.href
+        ? <a class="project__name project__link" href={project.href}>{project.name}</a>
+        : <span class="project__name">{project.name}</span>}
+    </h3>
+
+    <p class="meta project__location">{project.location}</p>
+
+    <div class:list={['stage', `stage--${project.stage}`]}>
+      <span class="stage__dot"></span>{stageLabel}
+    </div>
+  </div>
+</div>
+
+<style>
+  .project {
+    position: relative;
+  }
+  /* Filtered-out cards are removed from the grid, not faded. */
+  .project[hidden] {
+    display: none;
+  }
+
+  .project__frame {
+    overflow: hidden;
+    background: var(--paper-band);
+    aspect-ratio: 4 / 5;
+  }
+  .band--tint .project__frame {
+    background: rgba(0, 0, 0, 0.06);
+  }
+  /* --crop-scale is the zoom half of the crop; the hover lift multiplies it
+     rather than replacing it, so a tuned frame survives the hover. */
+  /* The crop is a rectangle: object-position picks its centre in the source,
+     and the zoom scales about that same point rather than about the frame. */
+  .project__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(var(--crop-scale, 1));
+    transform-origin: var(--crop-origin, center);
+    transition: transform 1.1s var(--ease-out);
+  }
+  .project:hover .project__img {
+    transform: scale(calc(var(--crop-scale, 1) * 1.03));
+  }
+
+  /* Type sits below the image on the page ground — never over the photograph.
+     A scrim and white type made the index read as a different site than the
+     one it belongs to. */
+  .project__body {
+    padding-top: var(--s-md);
+  }
+  .project__body .stage {
+    margin-top: var(--s-sm);
+  }
+
+  /* The name's overlay makes the whole card clickable without wrapping it.
+     The link stays unpositioned so the overlay lands on the card rather than
+     on the text — which is also why the rule below is drawn as a background
+     instead of as a second pseudo-element. */
+  .project__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  /* The rule wipes in from the left. Background-size is not a layout property,
+     so it animates without moving anything around it. It hangs on the name
+     rather than on the link, because a placeholder has a name but no link and
+     still earns the same hover. */
+  .project__name {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0 1px;
+    padding-bottom: 3px;
+    transition: background-size 0.5s var(--ease-out);
+  }
+  .project:hover .project__name {
+    background-size: 100% 1px;
+  }
+
+  /* The name is `ink` and has nowhere darker to go, so the supporting type
+     carries the darkening instead and the whole card reads as coming forward. */
+  .project__location {
+    margin-top: var(--s-hair);
+    transition: color 0.35s var(--ease-out);
+  }
+  .project:hover .project__location {
+    color: var(--ink-soft);
+  }
+  .project__body .stage {
+    transition: color 0.35s var(--ease-out);
+  }
+  .project:hover .stage {
+    color: var(--ink);
+  }
+</style>

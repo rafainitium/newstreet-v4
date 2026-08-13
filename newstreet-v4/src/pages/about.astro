@@ -1,0 +1,286 @@
+---
+/**
+ * DIRECTION CONTRACT — About the Firm
+ *
+ * THESIS: Who Newstreet is, argued in the same order a reader forms an opinion:
+ * what the firm believes, what that produces, and where it puts capital. The
+ * investors page answers "how does this work"; this page answers "who is doing
+ * it and why would it hold".
+ * STORY: An LP arrives from the nav or the home page's Difference section,
+ * reads the values, sees the advantage those values create, then sees the
+ * markets and the underwriting bar an asset has to clear — with the portfolio
+ * on a map beside it — and leaves either to the portfolio or to contact.
+ * FORM: The investors page's shape, deliberately. Half-height hero, then bands
+ * alternating ground, each a section header over a shared object. The partner
+ * rail closes the argument before the Close. Two exits at the foot: the
+ * portfolio from the map, and contact from the Close.
+ *
+ * Nothing on this page is hand-listed. Values, the advantage, and the criteria
+ * all come from `src/lib/firm.js`; the map is built from the project records.
+ */
+import Base from '../layouts/Base.astro';
+import Photo from '../components/Photo.astro';
+import ProjectMap from '../components/ProjectMap.astro';
+import Partners from '../components/Partners.astro';
+import portfolio from '../data/projects.json';
+import { values, sourcing, criteria } from '../lib/firm.js';
+
+const { projects } = portfolio;
+---
+
+<Base
+  title="About the Firm | Newstreet"
+  description="Newstreet is a Chicago-based multifamily investment and development firm — the values it underwrites to, the advantage those values create, and the markets and criteria an asset has to clear before capital is committed."
+  transparentNav={true}
+>
+  <!-- ===== Hero =============================================
+       Half height, matching the investors page.
+
+       THE IMAGE IS CITY PHOTOGRAPHY, NOT A NEWSTREET RECORD. It
+       replaces a dated groundbreaking frame, whose caption had to go
+       with it — a real record's credit left over a stock frame is a
+       false claim about whose building this is. Heroes now carry no
+       credit at all, which settles the question the other way: the
+       alt text still says what the frame is, and nothing under the
+       title can be read as naming a holding.
+
+       Chosen against the heading rather than for the view: a
+       masonry dome and its colonnade, carved to last and still
+       carrying, is the argument "built for the long term" makes in
+       one frame.
+
+       65% is the band that holds the whole crown — dome, columns and
+       the corner turrets — with the flat sky to the left for the
+       caption. Lower crops lose the dome to the top edge; higher ones
+       cut it off and leave only ornament. -->
+  <section class="hero hero--half" aria-labelledby="about-heading">
+    <Photo
+      class="hero__img"
+      src="Media/pexels-roythephotographer-36884713.jpg"
+      alt="The crowning storeys of a classical Chicago tower — a carved masonry dome above an arcade of columns, flanked by corner turrets — against a flat pale sky"
+      sizes="100vw"
+      loading="eager"
+      fetchpriority="high"
+      position="center 65%"
+    />
+
+    <div class="hero__caption">
+      <span class="kicker hero__kicker">About the Firm</span>
+      <h1 id="about-heading" class="display display--lg hero__title">Built for the long term</h1>
+    </div>
+  </section>
+
+  <!-- ===== Values ===========================================
+       First on the page, but it no longer claims the rest follows
+       from it. The values the client supplied describe how the team
+       works with itself; the advantage and the criteria below are
+       investment posture, and they stand on their own. The heading
+       and lede now say what the section actually covers rather than
+       promising to explain the page. -->
+  <section class="band band--paper band--flush-top" aria-labelledby="values-heading">
+    <div class="band__inner">
+      <div class="section-header rise">
+        <div class="section-header__text">
+          <span class="kicker">Our Values</span>
+          <h2 id="values-heading" class="display">How we work</h2>
+          <p class="prose">
+            Our values reflect the character of our team and the principles that guide our
+            work. They give us confidence in one another and in our ability to execute each
+            project successfully.
+          </p>
+        </div>
+      </div>
+
+      <div class="columns rise">
+        {values.map((item) => (
+          <div>
+            <h3 class="display display--sm">{item.title}</h3>
+            <p class="prose">{item.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== The advantage ====================================
+       The firm's proprietary infrastructure. TWO inputs to ONE
+       sourcing function, not two separate claims — which is why
+       the lede states what they produce together before the
+       columns arrive. It used to be said again in a closing
+       paragraph beneath them; once the lede carries it, the second
+       telling is just the same sentence further down.
+
+       It was three until the client removed on-the-ground
+       research. The count is written into three places that have
+       to move together: this set in firm.js, the lede's "two
+       inputs" below, and the `columns--2` modifier. A pair left in
+       a three-column track reads as a missing third.
+
+       Dark: this is the page's strongest differentiating claim
+       and the one band that should stop the reader. -->
+  <section class="band band--dark" id="advantage" aria-labelledby="advantage-heading">
+    <div class="band__inner">
+      <div class="section-header rise">
+        <div class="section-header__text">
+          <span class="kicker">The Newstreet Advantage</span>
+          <h2 id="advantage-heading" class="display">
+            Seeing opportunity before the market does
+          </h2>
+          <p class="prose">
+            Our sourcing platform combines AI-driven market intelligence with long-standing
+            broker relationships. Together, they surface opportunities that neither source
+            would find alone.
+          </p>
+        </div>
+      </div>
+
+      <div class="columns columns--2 rise">
+        {sourcing.map((item) => (
+          <div>
+            <h3 class="display display--sm">{item.title}</h3>
+            <p class="prose">{item.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Markets ==========================================
+       The portfolio map with the underwriting bar beside it —
+       the same component the portfolio index closes on, so the
+       two cannot drift. With no filter grid on this page it
+       plots every located asset.
+
+       THE LEDE NO LONGER INTRODUCES THE CRITERIA. It used to end
+       "an asset has to clear all four of the following", which
+       both counted them and handed off to the list. The copy now
+       states the principle in its own words and the list below
+       stands as the detail. If a criterion is ever added or
+       dropped, nothing here has to change — which the old sentence
+       could not say. -->
+  <section class="band band--paper" aria-labelledby="markets-heading">
+    <div class="band__inner">
+      <ProjectMap projects={projects} highlights={criteria} collapsible={true} portrait={true}>
+        <span class="kicker">Markets We Invest In</span>
+        <h2 id="markets-heading" class="display markets__heading">
+          Local principles. National opportunity
+        </h2>
+        <p class="prose markets__prose">
+          Chicago is where we started, and its conditions continue to shape how we invest:
+          high-demand markets with limited new supply, where infill development serves as an
+          amenity and a positive addition to the community. As we expand, those same
+          principles will guide every project we take on.
+        </p>
+        <a class="action-link markets__link" href="/portfolio">
+          See the portfolio <span class="action-link__arrow">→</span>
+        </a>
+      </ProjectMap>
+    </div>
+  </section>
+
+  <!-- ===== Partners =========================================
+       The last move in the argument: the values, what they
+       produce, where they are put to work, and then the parties
+       who have done that work. `tint`, because the markets band
+       above is paper and this page's bands alternate ground. -->
+  <Partners ground="tint" />
+
+  <!-- ===== Close ============================================
+       The page's one primary action. Contact, not the investor
+       package — a reader on this page is deciding whether to
+       talk to the firm, not asking for the offering. -->
+  <section class="band band--dark close" id="contact" aria-labelledby="contact-heading">
+    <div class="band__inner close__grid">
+      <div class="close__lede rise">
+        <span class="kicker">Contact</span>
+        <h2 id="contact-heading" class="display">Let's start a conversation</h2>
+        <p class="prose">
+          Whether you are evaluating an investment, have a site to discuss, or are exploring
+          a development partnership, we would like to hear from you.
+        </p>
+      </div>
+
+      <!-- An inset well, not a bordered card: the ground change carries the edge.
+
+           The panel was Investor Relations, offering the information package.
+           It is the plain contact well now, matching Team — the Close on this
+           page is contact, and a panel selling the offering was the second
+           thing this band asked for. The investor route is still in the nav,
+           the footer, and every project page. -->
+      <div class="close__panel rise">
+        <span class="kicker">Get in Touch</span>
+        <p class="prose">
+          Contact the Newstreet team to start the conversation.
+        </p>
+        <a class="action close__action" href="/contact">
+          Contact us <span class="action__arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* The half-height hero is a shared object in base.css. */
+
+  /* `.advantage__result` was here — the paragraph that closed the band by
+     stating what the two inputs produce together. The lede now makes that
+     claim before the columns rather than after them, so the closing line was
+     saying it twice. Removed with it. */
+
+  /* ---- Markets --------------------------------------------
+     ProjectMap supplies the Paired layout; these are only the
+     spacing rules for what this page slots into its text column. */
+  .markets__heading,
+  .markets__prose {
+    margin-top: var(--s-md);
+  }
+  .markets__link {
+    margin-top: var(--s-lg);
+  }
+
+  /* ---- Close ------------------------------------------------
+     The same object as the home and investors Close. */
+  .close__grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--s-lg);
+    align-items: start;
+  }
+  .close__lede {
+    grid-column: 1 / 7;
+  }
+  .close__lede .display,
+  .close__lede .prose {
+    margin-top: var(--s-md);
+  }
+  .close__panel {
+    grid-column: 8 / 13;
+    padding: var(--s-xl);
+    background: var(--dark-band);
+  }
+  .close__panel .prose {
+    margin-top: var(--s-sm);
+  }
+  .close__action {
+    margin-top: var(--s-lg);
+  }
+  /* Secondary, and visibly so — the page still has exactly one primary action. */
+  .close__second {
+    display: block;
+    margin-top: var(--s-md);
+    color: var(--on-dark-soft);
+  }
+
+  @media (max-width: 900px) {
+    .close__lede,
+    .close__panel {
+      grid-column: 1 / 13;
+    }
+    .close__panel {
+      margin-top: var(--s-lg);
+      padding: var(--s-lg);
+    }
+  }
+
+</style>

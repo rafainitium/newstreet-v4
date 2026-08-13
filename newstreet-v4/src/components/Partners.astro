@@ -1,0 +1,217 @@
+---
+/**
+ * Partners rail — the firms Newstreet has built with.
+ *
+ * A component rather than a block of page markup because it now closes the
+ * About the Firm argument, and the same set of marks rendered twice from two
+ * hand-kept copies is exactly how two sections doing one job drift apart.
+ * `ground` is the only thing a host page decides: bands alternate ground, so
+ * the band above this one sets which value it takes.
+ *
+ * The marks are the firm's own published list from `src/lib/partners.js` — not
+ * assembled here, because PRODUCT.md forbids implying relationships that do not
+ * exist. Every mark links to the party's own site: a logo with nothing behind
+ * it is decoration, and a reader should be able to check who these firms are.
+ */
+import Photo from './Photo.astro';
+import { partners } from '../lib/partners.js';
+
+const { ground = 'paper' } = Astro.props;
+---
+
+{/* A rail, because fifteen marks in a static block become a logo wall and this
+    is a record of who did the work. */}
+<section
+  class:list={['band', `band--${ground}`]}
+  aria-labelledby="partners-heading"
+  data-rail
+>
+  <div class="band__inner">
+    <div class="section-header rise">
+      <div class="section-header__text">
+        <span class="kicker">Who We Build With</span>
+        <h2 id="partners-heading" class="display">Partners on the work</h2>
+        <p class="prose">
+          Architects, engineers, contractors, counsel, and capital partners who have
+          worked on Newstreet assets.
+        </p>
+      </div>
+
+      <div class="section-header__action partners__nav">
+        <button class="rail-btn" type="button" data-rail-dir="-1" aria-label="Previous partners">
+          <span aria-hidden="true">&#8592;</span>
+        </button>
+        <button class="rail-btn" type="button" data-rail-dir="1" aria-label="Next partners">
+          <span aria-hidden="true">&#8594;</span>
+        </button>
+      </div>
+    </div>
+
+    <ul class="partners rise" data-rail-track tabindex="0" role="group" aria-label="Partner firms">
+      {partners.map((partner) => (
+        <li class="partners__item">
+          <a class="partners__link" href={partner.url} target="_blank" rel="noopener">
+            <Photo
+              class:list={['partners__mark', partner.dark && 'partners__mark--light']}
+              src={partner.logo}
+              alt={partner.name}
+              sizes="150px"
+            />
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  /* ---- Partners ---------------------------------------------
+     A rail. Fifteen marks stacked in a block read as a logo wall;
+     run along one line they read as a list of firms, which is
+     what they are. Scrolls by touch, trackpad, arrow key, and the
+     shared rail control — never on its own, because nothing on
+     this site moves without the reader asking. */
+  /* NO HAIRLINES AROUND THE MARKS. The system's rule is that an edge comes
+     from a ground change or a hairline, and this rail sits on a band of its
+     own — the ground has already drawn both edges. A header rule above the
+     marks and a closing rule below them fenced fifteen logos into a box,
+     which is the logo wall the rail exists to avoid. The header keeps its
+     space and drops its line; the rail's own top padding is now the only
+     thing holding the marks off it. */
+  .section-header {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  .partners {
+    display: flex;
+    align-items: center;
+    gap: var(--s-xl);
+    padding: var(--s-lg) 0 0;
+    list-style: none;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+  }
+  .partners::-webkit-scrollbar {
+    display: none;
+  }
+  .partners:focus-visible {
+    outline-offset: -2px;
+  }
+
+  .partners__item {
+    flex: none;
+    scroll-snap-align: start;
+  }
+  .partners__link {
+    display: flex;
+    align-items: center;
+    /* A consistent target regardless of how thin the mark is. */
+    min-height: 44px;
+  }
+
+  .partners__nav {
+    display: none;
+    gap: var(--s-xs);
+  }
+  .band[data-rail].is-scrollable .partners__nav {
+    display: flex;
+  }
+
+  /* A BOUNDED BOX, not a locked height. These marks run from 0.72:1 to nearly
+     18:1 even after trimming, so height alone would render the widest ones
+     several times the width of the narrowest. Bounding both and letting
+     `contain` decide is what makes fifteen unrelated logos sit at one optical
+     weight.
+
+     Third-party marks arrive in their own colours and are desaturated on the
+     same principle as the map tiles — the palette holds for everything the
+     page draws, including other firms' branding. */
+  .partners__mark {
+    width: auto;
+    height: auto;
+    max-height: 30px;
+    max-width: 132px;
+    object-fit: contain;
+    filter: grayscale(1);
+    opacity: 0.62;
+    transition: opacity 0.35s var(--ease-out);
+  }
+  /* Marks drawn in a light colour disappear on paper; forced black rather than
+     given a ground of their own. */
+  .partners__mark--light {
+    filter: grayscale(1) brightness(0);
+    opacity: 0.5;
+  }
+  .partners__link:hover .partners__mark {
+    opacity: 1;
+  }
+</style>
+
+<script>
+  /* The same index-stepping the project gallery uses: the buttons advance an
+     intended position rather than reading a scrollLeft that may still be in
+     flight, so two quick clicks move two steps instead of restarting one.
+     Controls appear only once the rail actually overflows. */
+  document.querySelectorAll('[data-rail]').forEach((root) => {
+    const track = root.querySelector('[data-rail-track]');
+    const buttons = [...root.querySelectorAll('[data-rail-dir]')];
+    if (!track) return;
+
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const behavior = reduced ? 'auto' : 'smooth';
+    let index = 0;
+
+    const items = () => [...track.children];
+    const base = () => (items()[0]?.offsetLeft ?? 0);
+    const positionOf = (i) => (items()[i]?.offsetLeft ?? 0) - base();
+
+    const sync = () => {
+      const max = track.scrollWidth - track.clientWidth;
+      const scrollable = max > 1;
+      root.classList.toggle('is-scrollable', scrollable);
+      buttons.forEach((btn) => {
+        const forward = btn.dataset.railDir === '1';
+        btn.disabled =
+          !scrollable || (forward ? track.scrollLeft >= max - 1 : track.scrollLeft <= 1);
+      });
+    };
+
+    /* Step by whole marks, but skip past any that are already fully in view —
+       advancing one logo at a time across fifteen is a lot of clicking. */
+    const advance = (dir) => {
+      const page = track.clientWidth * 0.8;
+      const target = track.scrollLeft + dir * page;
+      const nearest = items().reduce(
+        (best, _, i) =>
+          Math.abs(positionOf(i) - target) < Math.abs(positionOf(best) - target) ? i : best,
+        0,
+      );
+      index = nearest;
+      track.scrollTo({ left: positionOf(index), behavior });
+    };
+
+    buttons.forEach((btn) =>
+      btn.addEventListener('click', () => advance(Number(btn.dataset.railDir))),
+    );
+
+    let queued = false;
+    track.addEventListener(
+      'scroll',
+      () => {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(() => {
+          queued = false;
+          sync();
+        });
+      },
+      { passive: true },
+    );
+
+    window.addEventListener('resize', sync);
+    track.addEventListener('load', sync, true);
+    sync();
+  });
+</script>

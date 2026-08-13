@@ -1,0 +1,73 @@
+/* ============================================================
+   TOKENS — the single source of truth.
+   V3 carried six divergent copies of this block, one per page.
+
+   The palette is MONOCHROME. Black, white, and neutral grays —
+   no accent hue anywhere, including in data and state colors.
+   ============================================================ */
+
+:root {
+  /* --- Ground ------------------------------------------------ */
+  --paper: #ffffff;
+  --paper-band: #f4f4f4;
+  --dark: #141414;
+  --dark-band: #1e1e1e;
+
+  /* --- Ink --------------------------------------------------- */
+  --ink: #0e0e0e;
+  --ink-soft: #4a4a4a;
+  --ink-faint: #8a8a8a;
+  --ink-hover: #333333;
+  --on-dark: #f4f4f4;
+  --on-dark-soft: #9a9a9a;
+
+  /* --- Rules — horizontal only ------------------------------- */
+  --rule: rgba(0, 0, 0, 0.12);
+  --rule-strong: rgba(0, 0, 0, 0.24);
+  --rule-on-dark: rgba(255, 255, 255, 0.16);
+
+  /* --- Stage: a value ramp, light to dark, tracking progress
+         from pre-development through completion. Not a hue. --- */
+  --stage-pre: #a8a8a8;
+  --stage-construction: #6a6a6a;
+  --stage-completed: #0e0e0e;
+
+  /* --- Type -------------------------------------------------- */
+  --font-display: 'Libre Caslon Display', Georgia, 'Times New Roman', serif;
+  --font-text: 'Libre Franklin', system-ui, -apple-system, sans-serif;
+  /* Nohemi is the wordmark only — nav and footer. Nothing else. */
+  --font-wordmark: 'Nohemi', var(--font-text);
+
+  /* Published figures are the largest type on the site. The home hero is the
+     one exception and does not use this scale at all — it sets the wordmark,
+     which is a mark rather than a heading and is sized in its own component. */
+  --size-figure: clamp(42px, 5.2vw, 72px);
+  /* Page heroes only. Sits above display and stays below figure, so the
+     published numbers remain the largest type on the site. */
+  --size-display-lg: clamp(34px, 4.4vw, 60px);
+  --size-display: clamp(26px, 2.6vw, 38px);
+  --size-display-sm: clamp(19px, 1.5vw, 22px);
+  --size-body: 14px;
+  --size-body-sm: 13px;
+  --size-label: 10px;
+
+  --track-label: 0.18em;
+  --measure: 68ch;
+
+  /* --- Space ------------------------------------------------- */
+  --s-hair: 4px;
+  --s-xs: 8px;
+  --s-sm: 12px;
+  --s-md: 20px;
+  --s-lg: 32px;
+  --s-xl: 56px;
+  --band: clamp(64px, 8vw, 120px);
+  --gutter: clamp(20px, 4vw, 64px);
+  /* The fixed nav's own height. A page that does not open on a hero has to
+     clear it; see `main--solid-nav` in base.css. */
+  --nav-height: 58px;
+
+  /* --- Motion ------------------------------------------------ */
+  --ease: cubic-bezier(0.7, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}

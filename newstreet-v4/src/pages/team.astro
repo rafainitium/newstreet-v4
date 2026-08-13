@@ -1,0 +1,234 @@
+---
+/**
+ * DIRECTION CONTRACT — Team
+ *
+ * THESIS: The one page where names attach to faces. Everywhere else the firm
+ * speaks as a firm; here it is three people with track records an investor can
+ * weigh, in their own words.
+ * STORY: An LP who has read the process wants to know who runs it — reads the
+ * three, opens a bio, then contacts.
+ * FORM: The site's half-height hero, then the people. The hero image is the
+ * team itself, which is the one subject this page can open on without changing
+ * the subject, so it carries the page's name and the set follows it directly.
+ *
+ * The Split introduction that sat between the two is OUT FOR NOW, pending copy
+ * — not deleted because the page reads worse with it. Its claim (every
+ * discipline held in-house, which is what lets one standard hold) is the firm's
+ * and is still made on About the Firm; if it returns here it returns as a Split
+ * band above the people, flush to the hero.
+ *
+ * The partner marks used to close this page and now close About the Firm, where
+ * they are the last move in that page's argument rather than a second set of
+ * names competing with the three this page exists to give.
+ *
+ * Bios are verbatim from V3 and live in `src/lib/team.js`.
+ */
+import Base from '../layouts/Base.astro';
+import Photo from '../components/Photo.astro';
+import { team } from '../lib/team.js';
+---
+
+<Base
+  title="Team | Newstreet"
+  description="The people behind Newstreet — a small, senior team that underwrites, entitles, builds, and operates every asset it develops."
+  transparentNav={true}
+>
+  <!-- ===== Hero =============================================
+       City photography, not a Newstreet record. The people
+       themselves are named and pictured immediately below, where the
+       headshots carry them. No credit line — heroes across the site
+       carry none, and this frame is atmosphere rather than a located
+       record. The alt text still says what it is.
+
+       A PORTRAIT SOURCE IN A LANDSCAPE FRAME. This one is 2:3 and
+       the half-height hero is nearer 3:1, so `cover` keeps the full
+       width and throws away most of the height — the crop is doing
+       almost all the work here. 32% is the band that holds the
+       parapet statue, the carved cornice and the top of the
+       colonnade while leaving the glass curtain wall behind them
+       across the left half, which is the dark ground the caption
+       needs. Lower crops drop to blank column shafts; higher ones
+       are all glass and no stone. -->
+  <section class="hero hero--half" aria-labelledby="team-heading">
+    <Photo
+      class="hero__img"
+      src="Media/pexels-charles-parker-5847561.jpg"
+      alt="A classical limestone building — a Corinthian colonnade beneath a deep carved cornice, with a robed figure standing at the parapet — set against the blue glass curtain wall of a modern tower rising behind it"
+      sizes="100vw"
+      loading="eager"
+      fetchpriority="high"
+      position="center 32%"
+    />
+
+    <div class="hero__caption">
+      <span class="kicker hero__kicker">Team</span>
+      <h1 id="team-heading" class="display display--lg hero__title">Meet the team</h1>
+    </div>
+  </section>
+
+  <!-- ===== The people =======================================
+       Three cards on one shape. Headshots at a shared 4:5 so the
+       row reads as one set, then name, role, and the bio behind
+       the same disclosure the rest of the site uses — V3 marked
+       each member with a "+", and this is that affordance built
+       as the system's object rather than as a bespoke one.
+
+       NO HEADER, and none is missing. The Split introduction that
+       stood here is out for now, so the hero names the page and
+       the set follows it directly — the same reason the portfolio
+       index carries no heading of its own. `flush-top` because
+       this is now the first band and the hero supplies its edge. -->
+  <section class="band band--tint band--flush-top" aria-label="Leadership">
+    <div class="band__inner">
+      <div class="people">
+        {team.map((member) => (
+          <article class="person rise">
+            <Photo
+              class="person__photo"
+              src={member.headshot}
+              alt={member.name}
+              sizes="(max-width: 640px) 100vw, (max-width: 900px) 50vw, 31vw"
+            />
+
+            <h2 class="display display--sm person__name">{member.name}</h2>
+            <p class="kicker person__role">{member.role}</p>
+
+            <div class="disclose disclose--bare person__bio">
+              <details class="disclose__row">
+                <summary class="disclose__head disclose__head--compact">
+                  <span>Read bio</span>
+                  <span class="disclose__mark" aria-hidden="true"></span>
+                </summary>
+                <div class="disclose__body">
+                  {member.bio.map((paragraph) => <p class="prose">{paragraph}</p>)}
+                </div>
+              </details>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Close ============================================ -->
+  <section class="band band--dark close" aria-labelledby="team-close-heading">
+    <div class="band__inner close__grid">
+      <div class="close__lede rise">
+        <span class="kicker">Contact</span>
+        <h2 id="team-close-heading" class="display">Let's start a conversation</h2>
+        <p class="prose">
+          Whether you are evaluating an investment, have a site to discuss, or are exploring
+          a development partnership, we would like to hear from you.
+        </p>
+      </div>
+
+      <div class="close__panel rise">
+        <span class="kicker">Get in Touch</span>
+        <p class="prose">
+          Contact the Newstreet team to start the conversation.
+        </p>
+        <a class="action close__action" href="/contact">
+          Contact us <span class="action__arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* ---- People -----------------------------------------------
+     Three equal columns held apart by gap, like every other set
+     on this site. */
+  .people {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--s-xl) var(--s-lg);
+  }
+
+  /* One ratio for the row. Headshots arrive at different crops and a shared
+     frame is the only thing that makes three portraits read as one team. */
+  .person__photo {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    /* Faces sit high in a portrait crop; centring drops foreheads. */
+    object-position: center 22%;
+    background: var(--paper);
+  }
+
+  .person__name {
+    margin-top: var(--s-md);
+  }
+  .person__role {
+    margin-top: var(--s-hair);
+  }
+
+  /* `--bare`, so the disclosure draws no hairlines here: one row inside a card
+     is not a list, and the two rules were fencing a single control. Space is
+     the only separator it gets, and the only one it needs. */
+  .person__bio {
+    margin-top: var(--s-md);
+  }
+  /* A control, not a question: label scale, like the reporting list. */
+  .disclose__head--compact {
+    font-family: var(--font-text);
+    font-size: var(--size-label);
+    font-weight: 500;
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    padding: var(--s-sm) 0;
+  }
+  .disclose__head--compact:hover {
+    color: var(--ink);
+  }
+  .person__bio .prose + .prose {
+    margin-top: var(--s-sm);
+  }
+
+  /* ---- Close ------------------------------------------------ */
+  .close__grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--s-lg);
+    align-items: start;
+  }
+  .close__lede {
+    grid-column: 1 / 7;
+  }
+  .close__lede .display,
+  .close__lede .prose {
+    margin-top: var(--s-md);
+  }
+  .close__panel {
+    grid-column: 8 / 13;
+    padding: var(--s-xl);
+    background: var(--dark-band);
+  }
+  .close__panel .prose {
+    margin-top: var(--s-sm);
+  }
+  .close__action {
+    margin-top: var(--s-lg);
+  }
+
+  @media (max-width: 900px) {
+    .people {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .close__lede,
+    .close__panel {
+      grid-column: 1 / 13;
+    }
+    .close__panel {
+      margin-top: var(--s-lg);
+      padding: var(--s-lg);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .people {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

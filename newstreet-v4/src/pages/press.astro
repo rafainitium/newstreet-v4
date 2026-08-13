@@ -1,0 +1,343 @@
+---
+/**
+ * DIRECTION CONTRACT — Press
+ *
+ * THESIS: Third-party coverage is the one claim on this site the firm does not
+ * make itself, so the page gets out of its way: no pull quotes, no logo wall,
+ * no editorialising. A dated index, newest first, every row leaving to the
+ * publication.
+ * STORY: An LP checking whether anyone outside the firm has written about it
+ * scans the outlets, reads the record by year, and leaves to a source.
+ * FORM: Half-height hero, then the List pattern grouped by year. V3 loaded its
+ * press from an xlsx in the browser, so none of it was server-rendered or
+ * indexable; here it is built from press.json at build time.
+ *
+ * Every count and every outlet name on this page is derived from the record.
+ * Nothing is hand-typed.
+ */
+import Base from '../layouts/Base.astro';
+import Photo from '../components/Photo.astro';
+import press from '../data/press.json';
+import portfolio from '../data/projects.json';
+
+const { articles, outlets } = press;
+
+/* Newest first, then grouped by year — a dated index reads by year, and the
+   heading is the only thing standing between one year's coverage and the next. */
+const sorted = [...articles].sort((a, b) => b.date.localeCompare(a.date));
+
+/* Each article's image is OURS, never the publisher's. The sheet's Image column
+   chooses it; left blank, it falls back to the render on the record of the
+   project the article is about, so the common case needs no decision at all. */
+const projectOf = (article) =>
+  portfolio.projects.find(
+    (p) => p.slug === article?.project || p.name === article?.project,
+  );
+
+const imageFor = (article) =>
+  article.image ??
+  (projectOf(article) ? decodeURIComponent(projectOf(article).image) : null);
+
+/* The lead is chosen in the spreadsheet's Featured column, not here. If more
+   than one row is marked, the most recent wins; if none is, the page runs
+   without a lead and the index simply starts at the first year. */
+const lead = sorted.find((a) => a.featured) ?? null;
+const leadImage = lead ? imageFor(lead) : null;
+const leadImageAlt = lead
+  ? `${projectOf(lead)?.name ?? lead.project ?? 'Newstreet'} — project rendering`
+  : '';
+
+/* The lead is pulled OUT of the index rather than repeated in it — the same
+   headline twice on one screen reads as a mistake, not as emphasis. */
+const indexed = lead ? sorted.filter((a) => a !== lead) : sorted;
+
+const years = [...new Set(indexed.map((a) => a.date.slice(0, 4)))];
+const byYear = years.map((year) => ({
+  year,
+  articles: indexed.filter((a) => a.date.startsWith(year)),
+}));
+
+const formatDate = (iso) =>
+  new Date(`${iso}T00:00:00`).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+---
+
+<Base
+  title="Press | Newstreet"
+  description={`Third-party coverage of Newstreet's projects and transactions across ${outlets.length} publications, including ${outlets.slice(0, 3).join(', ')}.`}
+  transparentNav={true}
+>
+  <!-- ===== Hero =============================================
+       PLACEHOLDER image until the client supplies one. It is a
+       real, located Newstreet record in the meantime. -->
+  <section class="hero hero--half" aria-labelledby="press-heading">
+    <Photo
+      class="hero__img"
+      src="Media/pexels-harrisrigorad-25261411.jpg"
+      alt="The Jewelers Building and Marina City from the Chicago River, Chicago"
+      sizes="100vw"
+      loading="eager"
+      fetchpriority="high"
+      position="center 34%"
+    />
+
+    <div class="hero__caption">
+      <span class="kicker hero__kicker">Press</span>
+      <h1 id="press-heading" class="display display--lg hero__title">Following the markets</h1>
+    </div>
+  </section>
+
+  <!-- ===== Coverage =========================================
+       The List pattern. Rows leave the site, so each opens in a
+       new tab and says so to assistive technology. -->
+  <section class="band band--paper band--flush-top" aria-label="Coverage">
+    <div class="band__inner">
+      <!-- ===== Featured ======================================
+           The Featured row from the spreadsheet. Image left on the
+           page grid — its left edge is the same edge the hero's
+           headline sits on — and deliberately the smaller half, so
+           the article reads as type with a picture rather than a
+           picture with a caption.
+
+           Images are ours, never the publisher's — see the note in
+           extract-press.mjs. -->
+      {lead && (
+        <a class="lead rise" href={lead.url} target="_blank" rel="noopener">
+          {leadImage && (
+            <figure class="lead__figure">
+              <Photo
+                class="lead__img"
+                src={leadImage}
+                alt={leadImageAlt}
+                sizes="(max-width: 900px) 100vw, 38vw"
+              />
+            </figure>
+          )}
+
+          <div class="lead__text">
+            <span class="lead__meta">
+              <span class="lead__outlet">{lead.outlet}</span>
+              <span class="lead__dot" aria-hidden="true">·</span>
+              <span class="lead__date">{formatDate(lead.date)}</span>
+            </span>
+
+            <h2 class="display lead__title">{lead.title}</h2>
+
+            {lead.excerpt && <p class="prose lead__excerpt">{lead.excerpt}</p>}
+
+            <span class="lead__foot">
+              <span class="kicker">Featured article</span>
+              <span class="action-link">
+                Read the story <span class="action-link__arrow" aria-hidden="true">↗</span>
+                <span class="u-visually-hidden">(opens in a new tab)</span>
+              </span>
+            </span>
+          </div>
+        </a>
+      )}
+
+      {byYear.map((group) => (
+        <section class="year rise" aria-label={`Coverage from ${group.year}`}>
+          <h3 class="kicker year__label">{group.year}</h3>
+
+          <div class="year__list">
+            {group.articles.map((article) => (
+              <a class="list__row" href={article.url} target="_blank" rel="noopener">
+                <span class="list__source">
+                  <span class="list__date">{formatDate(article.date)}</span>
+                  <span class="list__outlet">{article.outlet}</span>
+                </span>
+                <span class="list__title">{article.title}</span>
+                <span class="list__arrow" aria-hidden="true">↗</span>
+                <span class="u-visually-hidden">(opens in a new tab)</span>
+              </a>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  </section>
+
+  <!-- ===== Close ============================================ -->
+  <section class="band band--dark close" aria-labelledby="press-close-heading">
+    <div class="band__inner close__grid">
+      <div class="close__lede rise">
+        <span class="kicker">Media Enquiries</span>
+        <h2 id="press-close-heading" class="display">Writing about a project?</h2>
+        <p class="prose">
+          We can provide project facts, renderings, and comment on any of the assets covered
+          above. Renderings are available at print resolution on request.
+        </p>
+      </div>
+
+      <div class="close__panel rise">
+        <span class="kicker">Press Contact</span>
+        <p class="prose">
+          Tell us your deadline and we will come back to you directly.
+        </p>
+        <!-- Lands on the form already set to Media, so a journalist on a
+             deadline does not classify their own enquiry. -->
+        <a class="action close__action" href="/contact?about=media">
+          Make a press enquiry <span class="action__arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* The half-height hero is a shared object in base.css. */
+
+  /* ---- Featured article -------------------------------------
+     Image left, on the page grid: its left edge is the same edge
+     the hero headline sits on, so the eye drops straight down one
+     line rather than stepping sideways.
+
+     The image is the SMALLER half — 5 columns against the text's
+     7. At an equal or larger share it read as a picture with a
+     caption beside it; under-weighted, the article reads as type
+     that happens to carry an image, which is what a press page
+     should be. */
+  .lead {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--s-lg);
+    align-items: center;
+    /* No closing rule. The block already ends on the labelled hairline inside
+       it, and a second rule directly above the year label's own read as a
+       double line with nothing between them. Space separates them instead. */
+    padding-bottom: var(--s-xl);
+  }
+  .lead__figure {
+    grid-column: 1 / 6;
+  }
+  /* 3:2 is the renders' own proportion, so the frame takes them whole. */
+  .lead__img {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+  }
+  .lead__text {
+    grid-column: 7 / 13;
+  }
+  /* No image: the text still holds the grid rather than running the full
+     width, because a headline set across 1400px cannot be read. */
+  .lead__text:only-child {
+    grid-column: 1 / 9;
+  }
+
+  .lead__meta {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: var(--s-sm);
+    font-size: var(--size-label);
+    font-weight: 500;
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    line-height: 1.4;
+  }
+  .lead__outlet {
+    color: var(--ink-soft);
+  }
+  .lead__dot,
+  .lead__date {
+    color: var(--ink-faint);
+  }
+
+  .lead__title {
+    margin-top: var(--s-sm);
+    transition: color 0.3s var(--ease-out);
+  }
+  .lead:hover .lead__title {
+    color: var(--ink-soft);
+  }
+  .lead__excerpt {
+    margin-top: var(--s-md);
+  }
+
+  /* A labelled rule closing the block: what it is on the left, where it goes
+     on the right. Horizontal, so the rule system holds. */
+  .lead__foot {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s-lg);
+    margin-top: var(--s-lg);
+    padding-top: var(--s-md);
+    border-top: 1px solid var(--rule);
+  }
+  .lead:hover .action-link__arrow {
+    transform: translateX(3px);
+  }
+
+  /* ---- Year groups ------------------------------------------
+     The year is a label on the record, not a heading competing
+     with the section's own. It sits above its rows and the rows
+     carry their existing hairlines. */
+  .year {
+    margin-top: var(--s-xl);
+  }
+  /* The band opens on the featured article, so the first year needs no extra air. */
+  .lead + .year {
+    margin-top: var(--s-lg);
+  }
+  .year__label {
+    padding-bottom: var(--s-sm);
+    border-bottom: 1px solid var(--rule-strong);
+  }
+  .year__list {
+    margin-top: 0;
+  }
+
+  /* An outbound arrow, not the site's own → : these rows leave. */
+  .list__arrow {
+    font-size: var(--size-body-sm);
+  }
+
+  /* ---- Close ------------------------------------------------ */
+  .close__grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--s-lg);
+    align-items: start;
+  }
+  .close__lede {
+    grid-column: 1 / 7;
+  }
+  .close__lede .display,
+  .close__lede .prose {
+    margin-top: var(--s-md);
+  }
+  .close__panel {
+    grid-column: 8 / 13;
+    padding: var(--s-xl);
+    background: var(--dark-band);
+  }
+  .close__panel .prose {
+    margin-top: var(--s-sm);
+  }
+  .close__action {
+    margin-top: var(--s-lg);
+  }
+
+  @media (max-width: 900px) {
+    .lead__figure,
+    .lead__text,
+    .lead__text:only-child {
+      grid-column: 1 / 13;
+    }
+    .close__lede,
+    .close__panel {
+      grid-column: 1 / 13;
+    }
+    .close__panel {
+      margin-top: var(--s-lg);
+      padding: var(--s-lg);
+    }
+  }
+
+</style>

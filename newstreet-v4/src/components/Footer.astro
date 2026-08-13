@@ -1,0 +1,160 @@
+---
+const columns = [
+  {
+    heading: 'Firm',
+    links: [
+      { label: 'About the Firm', href: '/about' },
+      /* No /strategy route — that content is the investors page. It opens at
+         the top, matching the nav: one label cannot have two destinations. */
+      { label: 'Investment Strategy', href: '/investors' },
+      { label: 'Team', href: '/team' },
+    ],
+  },
+  {
+    heading: 'Portfolio',
+    links: [
+      { label: 'Developments', href: '/portfolio#developments' },
+      { label: 'Investments', href: '/portfolio#investments' },
+      { label: 'Press', href: '/press' },
+    ],
+  },
+  {
+    heading: 'Investors',
+    links: [
+      { label: 'Investor Relations', href: '/investors' },
+      { label: 'Request Information', href: '/investors#request' },
+      { label: 'Contact', href: '/contact' },
+    ],
+  },
+];
+
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__brand">
+      <div class="footer__wordmark">new<span class="footer__wordmark-light">street</span></div>
+      <p class="footer__line">Institutional multifamily investment and development.</p>
+      <p class="footer__line footer__line--faint">Chicago, Illinois</p>
+    </div>
+
+    {columns.map((col) => (
+      <nav class="footer__col">
+        <h2 class="footer__heading">{col.heading}</h2>
+        <ul>
+          {col.links.map((link) => (
+            <li><a class="footer__link" href={link.href}>{link.label}</a></li>
+          ))}
+        </ul>
+      </nav>
+    ))}
+
+    <address class="footer__col footer__col--office">
+      <h2 class="footer__heading">Office</h2>
+      <p class="footer__line footer__line--faint">
+        33 W Monroe St, Suite 2100<br />Chicago, IL 60603
+      </p>
+      <a class="footer__link" href="mailto:info@newst.com">info@newst.com</a>
+    </address>
+  </div>
+
+  <div class="footer__base">
+    <span>© {year} Newstreet. All rights reserved.</span>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--dark);
+    color: var(--on-dark);
+    padding: var(--band) var(--gutter) var(--s-lg);
+  }
+
+  .footer__inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1.2fr;
+    gap: var(--s-lg);
+    padding-bottom: var(--s-xl);
+  }
+
+  .footer__wordmark {
+    font-family: var(--font-wordmark);
+    font-size: 23px;
+    font-weight: 500;
+    letter-spacing: -0.075em;
+    line-height: 1;
+    margin-bottom: var(--s-md);
+  }
+  .footer__wordmark-light {
+    font-weight: 200;
+  }
+
+  .footer__line {
+    font-size: var(--size-body-sm);
+    color: var(--on-dark-soft);
+    max-width: 30ch;
+  }
+  .footer__line--faint {
+    margin-top: var(--s-xs);
+  }
+
+  .footer__heading {
+    font-size: var(--size-label);
+    font-weight: 500;
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--on-dark-soft);
+    margin-bottom: var(--s-md);
+  }
+
+  .footer__col ul {
+    list-style: none;
+    display: grid;
+    gap: var(--s-xs);
+  }
+
+  .footer__col--office {
+    font-style: normal;
+  }
+  .footer__col--office .footer__link {
+    display: inline-block;
+    margin-top: var(--s-md);
+  }
+
+  .footer__link {
+    font-size: var(--size-body-sm);
+    color: var(--on-dark);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.35s var(--ease-out);
+  }
+  .footer__link:hover {
+    border-bottom-color: var(--on-dark);
+  }
+
+  .footer__base {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding-top: var(--s-md);
+    border-top: 1px solid var(--rule-on-dark);
+    font-size: var(--size-label);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--on-dark-soft);
+  }
+
+  @media (max-width: 900px) {
+    .footer__inner {
+      grid-template-columns: repeat(2, 1fr);
+      row-gap: var(--s-xl);
+    }
+  }
+
+  @media (max-width: 520px) {
+    .footer__inner {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

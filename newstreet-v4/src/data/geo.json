@@ -1,0 +1,14 @@
+{
+  "_note": "Authored, not extracted. V3 carries no coordinates; these are derived from the street addresses printed on the V3 project pages using the Chicago street grid (State/Madison origin, 800 units per mile). Accurate to roughly a building, NOT surveyed — verify before treating as a site plan. Assets with no entry here are not plotted, which is the point for undisclosed ones.",
+
+  "Arris": { "lat": 41.929, "lng": -87.6425, "address": "606 W Wrightwood Ave" },
+  "1810NW": { "lat": 41.9147, "lng": -87.6327, "address": "1810 N Wells St" },
+  "1165Clark": { "lat": 41.903, "lng": -87.6302, "address": "1165 N Clark St" },
+  "200WO": { "lat": 41.8928, "lng": -87.6327, "address": "200 W Ohio St" },
+  "424": { "lat": 41.8742, "lng": -87.6267, "address": "424 S Wabash Ave", "labelDy": -16 },
+  "626": { "lat": 41.8706, "lng": -87.6267, "address": "626 S Wabash Ave", "labelDy": 16 },
+
+  "100NB": { "lat": 41.7606, "lng": -88.3126, "market": "Aurora, Illinois" },
+  "5thpine": { "lat": 41.7075, "lng": -86.895, "market": "Michigan City, Indiana" },
+  "319Peabody": { "lat": 36.1583, "lng": -86.769, "market": "Nashville, Tennessee" }
+}

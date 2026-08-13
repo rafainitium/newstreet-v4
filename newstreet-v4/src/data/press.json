@@ -1,0 +1,122 @@
+{
+  "outlets": [
+    "Chicago YIMBY",
+    "Crain's Chicago Business",
+    "REBusinessOnline",
+    "The Real Deal",
+    "Urbanize Chicago",
+    "WSBT 22"
+  ],
+  "articles": [
+    {
+      "title": "Full Building Permit Issued For 48 Units At 2600 North Clark",
+      "outlet": "Chicago YIMBY",
+      "url": "https://chicagoyimby.com/2026/05/full-building-permit-issued-for-48-units-at-2600-north-clark.html",
+      "date": "2026-05-20",
+      "excerpt": "The full permit to complete construction on the residential development at 2600 North Clark Street in Lincoln Park came through on May 18.",
+      "featured": true,
+      "project": "Arris",
+      "image": null,
+      "imageUrlDropped": true
+    },
+    {
+      "title": "Construction Has Begun On 2600 North Clark In Lincoln Park",
+      "outlet": "Chicago YIMBY",
+      "url": "https://chicagoyimby.com/2026/03/construction-has-begun-on-2600-north-clark-in-lincoln-park.html",
+      "date": "2026-03-19",
+      "excerpt": "Construction is underway for the new residential development at 2600 North Clark Street in Lincoln Park. ENC Construction is working on excavation and shoring for the future five-story, 48-unit building.",
+      "featured": false,
+      "project": "Arris",
+      "image": null,
+      "imageUrlDropped": true
+    },
+    {
+      "title": "2600 N. Clark Celebrates Groundbreaking",
+      "outlet": "Urbanize Chicago",
+      "url": "https://chicago.urbanize.city/post/2600-n-clark-celebrates-groundbreaking",
+      "date": "2026-03-18",
+      "excerpt": "Chicago-based Initium Development, joined by Alderman Timmy Knudsen and project partners, recently celebrated the groundbreaking of 2600 N. Clark, a mixed-use development in Lincoln Park.",
+      "featured": false,
+      "project": "Arris",
+      "image": null,
+      "imageUrlDropped": true
+    },
+    {
+      "title": "DAC Developments Closes on Nashville SoBro Site for 53-Story Tower",
+      "outlet": "The Real Deal",
+      "url": "https://therealdeal.com/national/nashville/2026/03/11/dac-developments-closes-on-nashville-site-for-53-story-tower/",
+      "date": "2026-03-11",
+      "excerpt": "DAC Developments paid $22 million for the SoBro property where it plans to build a 53-story hotel and condominium tower. The $460 million development includes 405 hotel rooms and 104 condos at 319 Peabody Street.",
+      "featured": false,
+      "project": "319Peabody",
+      "image": null,
+      "imageUrlDropped": true
+    },
+    {
+      "title": "Lincoln Park Apartment Development Lands Financing — and Foxtrot as Retail Tenant",
+      "outlet": "Crain's Chicago Business",
+      "url": "https://www.chicagobusiness.com/real-estate/commercial/ccb-lincoln-park-apartments-financing-foxtrot/",
+      "date": "2026-03-05",
+      "excerpt": "A planned five-story, 48-unit apartment development at 2600 N. Clark St. has $16 million in financing to move forward and Foxtrot as its retail tenant.",
+      "featured": false,
+      "project": "Arris",
+      "image": null,
+      "imageUrlDropped": true
+    },
+    {
+      "title": "Foundation Permit Issued for Development at 2600 N. Clark",
+      "outlet": "Urbanize Chicago",
+      "url": "https://chicago.urbanize.city/post/foundation-permit-issued-development-2600-n-clark",
+      "date": "2026-01-21",
+      "excerpt": "A foundation permit has been issued for a mixed-use development at 2600 N. Clark in Lincoln Park, planned by Chicago-based Initium Development. The five-story building will hold 48 units and ground-floor retail.",
+      "featured": false,
+      "project": "Arris",
+      "image": null,
+      "imageUrlDropped": true
+    },
+    {
+      "title": "The Glass Is Nearly Full At 626 South Wabash In The South Loop",
+      "outlet": "Chicago YIMBY",
+      "url": "https://chicagoyimby.com/2026/01/the-glass-is-nearly-full-at-626-south-wabash-in-the-south-loop.html",
+      "date": "2026-01-08",
+      "excerpt": "Now topped out and craneless, 626 South Wabash is within a couple stories of completing its exterior glass installation down in the South Loop. The 19-story, 164-unit building is expected to open this fall.",
+      "featured": false,
+      "project": "626",
+      "image": null,
+      "imageUrlDropped": true
+    },
+    {
+      "title": "Demolition Complete For 424 South Wabash Hotel Tower In The Loop",
+      "outlet": "Chicago YIMBY",
+      "url": "https://chicagoyimby.com/2025/09/demolition-complete-for-424-south-wabash-hotel-tower-in-the-loop.html",
+      "date": "2025-09-18",
+      "excerpt": "Demolition of the commercial building at 424 South Wabash Avenue in The Loop is complete, with the structure razed from the site. Construction is expected to begin in December, pointing to an opening in early summer 2027.",
+      "featured": false,
+      "project": "424",
+      "image": null,
+      "imageUrlDropped": true
+    },
+    {
+      "title": "$200 Million Proposed Development Unveiled in Michigan City",
+      "outlet": "WSBT 22",
+      "url": "https://wsbt.com/news/local/200-million-proposed-development-unveiled-michigan-city-tow-phases-former-memorial-hospital-apartments-retail-chicago-developers-laporte-county-indiana",
+      "date": "2025-03-28",
+      "excerpt": "A $200-million proposed development was unveiled for downtown Michigan City. The 3-block-long site, called '5th and Pine', would be built in 2-phases and include apartments, retail and parking, and a grocery store, on the site of the former Memorial Hospital.",
+      "featured": false,
+      "project": "5thpine",
+      "image": null,
+      "imageUrlDropped": true
+    },
+    {
+      "title": "Waterton Provides $16M Preferred Equity Investment for Multifamily Project in Aurora, Illinois",
+      "outlet": "REBusinessOnline",
+      "url": "https://rebusinessonline.com/waterton-provides-16m-preferred-equity-investment-for-multifamily-project-in-aurora-illinois/",
+      "date": "2025-01-23",
+      "excerpt": "Waterton has provided a $16 million preferred equity investment for the development of the Residences at Eastbank, a 258-unit apartment complex in downtown Aurora. Chicago-based DAC Developments is developing the five-story project, slated for completion in 2026.",
+      "featured": false,
+      "project": "100NB",
+      "image": null,
+      "imageUrlDropped": true
+    }
+  ]
+}

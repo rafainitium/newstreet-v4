@@ -1,0 +1,48 @@
+---
+/**
+ * Renders an optimized image from the manifest built by scripts/optimize-images.mjs.
+ *
+ * `src` is the original path relative to the V3 asset root, exactly as it appears in
+ * projects.json — the manifest is the only place that knows about derivatives, so
+ * callers never reference /img/ paths directly.
+ */
+import manifest from '../data/images.json';
+
+const {
+  src,
+  alt,
+  sizes = '100vw',
+  class: className,
+  loading = 'lazy',
+  fetchpriority,
+  position,
+  ...rest
+} = Astro.props;
+
+const entry = manifest[src];
+
+if (!entry) {
+  throw new Error(
+    `Photo: "${src}" is not in the image manifest. ` +
+      `Add it to EXTRA_SOURCES in scripts/optimize-images.mjs, then run \`npm run images\`.`,
+  );
+}
+---
+
+<picture>
+  <source type="image/avif" srcset={entry.avif} sizes={sizes} />
+  <img
+    class={className}
+    src={entry.fallback}
+    srcset={entry.webp}
+    sizes={sizes}
+    width={entry.width}
+    height={entry.height}
+    alt={alt}
+    loading={loading}
+    fetchpriority={fetchpriority}
+    decoding="async"
+    style={position ? `object-position:${position}` : undefined}
+    {...rest}
+  />
+</picture>

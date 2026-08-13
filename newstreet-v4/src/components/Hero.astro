@@ -1,0 +1,336 @@
+---
+/**
+ * Home hero — V3's drone film over the firm's own excavation, carrying the
+ * wordmark and the positioning line, centred.
+ *
+ * THIS IS THE ONE CENTRED COMPOSITION ON THE SITE, and it is deliberate rather
+ * than inherited: what sits here is the mark, not a heading, and a mark belongs
+ * on its own axis. Everything below the fold returns to the page gutter at
+ * once. Note that PRODUCT.md still records the July 2026 decision to retire a
+ * centred hero lockup — this supersedes it, and that entry needs updating.
+ *
+ * The film is decorative and says nothing the lockup does not, so it is hidden
+ * from assistive technology. The poster is what a reader sees first, and what
+ * anyone who asked for reduced motion keeps.
+ *
+ * Below 680 the film is replaced by a carousel of the developments — see FRAMES.
+ */
+import Photo from './Photo.astro';
+const POSTER = '/video/hero-poster.jpg';
+const FILM = '/video/hero.mp4';
+
+/**
+ * PHONES GET THE WORK, NOT THE FILM.
+ *
+ * `hero.mp4` is 16MB. On a phone that is the page — several seconds of cellular
+ * data before anything moves, spent on footage of an excavation. These are the
+ * buildings themselves, and they are already in the manifest at six widths, so
+ * a phone loads one frame at the width it actually has.
+ *
+ * The site's rule is that nothing moves without the reader asking, and the
+ * portfolio hero gave up a rotation for exactly that reason. This is the one
+ * place it does not apply: the frame it replaces is a film that was already
+ * moving, so the carousel takes over a motion the composition was built around
+ * rather than introducing one. `prefers-reduced-motion` still holds it on the
+ * first frame.
+ */
+const FRAMES = [
+  { src: '1165Clark/1165-n-clark-exterior.png', alt: '1165 N Clark Street, Gold Coast, Chicago' },
+  { src: '319Peabody/232865_N15_medium.jpg', alt: '319 Peabody, SoBro, Nashville' },
+  { src: 'Arris/Renders/Hero Render.jpg', alt: 'The Arris, Lincoln Park, Chicago' },
+];
+---
+
+<section class="hero" id="top" aria-labelledby="hero-heading">
+  {/* `data-src`, not `src` — the script attaches it only above the breakpoint,
+      so a phone never begins the 16MB download for an element it cannot see.
+      Hiding it in CSS alone would still fetch. */}
+  <video
+    class="hero__video"
+    poster={POSTER}
+    data-src={FILM}
+    autoplay
+    loop
+    muted
+    playsinline
+    preload="none"
+    aria-hidden="true"
+    tabindex="-1"
+  ></video>
+
+  {/* Decorative, like the film: the lockup above says what this is, and the
+      buildings are named on the pages these frames come from. */}
+  <div class="hero__frames" aria-hidden="true">
+    {FRAMES.map((frame, i) => (
+      <Photo
+        class:list={['hero__frame', i === 0 && 'is-current']}
+        src={frame.src}
+        alt=""
+        sizes="100vw"
+        loading={i === 0 ? 'eager' : 'lazy'}
+        fetchpriority={i === 0 ? 'high' : undefined}
+      />
+    ))}
+  </div>
+
+  <div class="hero__mute"></div>
+
+  <div class="hero__lockup">
+    <h1 id="hero-heading" class="hero__wordmark">new<span class="hero__wordmark-light">street</span></h1>
+    <p class="hero__line">
+      Institutional <span class="hero__line-strong">Discipline</span>.
+      Local <span class="hero__line-strong">Execution</span>.
+    </p>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    height: 100vh;
+    min-height: 560px;
+    overflow: hidden;
+    background: var(--dark);
+  }
+
+  /* Behind everything, covering the frame at any ratio. The poster carries the
+     same treatment, so the swap from still to moving is invisible. */
+  .hero__video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+  }
+
+  /* ---- The mobile carousel ----------------------------------
+     Stacked in one frame and crossfaded, so nothing slides and nothing
+     reflows — the lockup sits still while the ground changes behind it. The
+     fade is long on purpose: at this size a quick cut reads as a glitch.
+
+     Off above the breakpoint, where the film plays. */
+  .hero__frames {
+    display: none;
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+  .hero__frame {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 1.2s var(--ease-out);
+  }
+  .hero__frame.is-current {
+    opacity: 1;
+  }
+
+  @media (max-width: 680px) {
+    .hero__video {
+      display: none;
+    }
+    .hero__frames {
+      display: block;
+    }
+  }
+
+  /* Asked for less motion, the set holds on the first frame. */
+  @media (prefers-reduced-motion: reduce) {
+    .hero__frame {
+      transition: none;
+    }
+  }
+
+  /* AN EVEN GRADE, NOT A HALO. This carried 0.24 and leaned on a radial that
+     darkened the ellipse under the lockup — which is a drop shadow drawn in
+     gradient rather than in `text-shadow`, and reads as one. The system holds
+     no soft dark form behind type on imagery, so the radial is gone and the
+     whole frame is graded down instead.
+
+     Set from measurement, not by eye: sampling the box the lockup occupies,
+     the poster's 95th percentile of relative luminance is 0.61 and the film's
+     worst of 24 frames is 0.559 — so the still, not the footage, is the case
+     to beat. At 0.46 white type reads 5.6:1 on the poster and 5.9:1 at the
+     film's worst, and no sampled frame falls under AA. Worth noting this is
+     LIGHTER over the type than the old pair, which stacked to about 0.67 at
+     centre — the image loses nothing where it was carrying the mark and only
+     gives up brightness at the edges, where nothing was reading anyway. */
+  .hero__mute {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: rgba(0, 0, 0, 0.46);
+  }
+  /* Edge weighting only — the same top-and-bottom treatment every other hero on
+     the site uses. It seats the nav at the top and settles the bottom edge, and
+     it is clear through the middle, so it never draws a shape around the type. */
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.42) 0%,
+      rgba(0, 0, 0, 0) 22%,
+      rgba(0, 0, 0, 0) 76%,
+      rgba(0, 0, 0, 0.38) 100%
+    );
+  }
+
+  /* ---- The lockup -------------------------------------------
+     Centred, and the only centred composition on the site. It is
+     the wordmark, so it is the one place the brand may sit on its
+     own axis rather than the page's — everything below returns to
+     the gutter immediately.
+
+     THE WORDMARK IS TYPE, NOT AN IMAGE. Same face, same weights,
+     same tracking as the wordmark in the bar; only the size is
+     different. A PNG would soften on every display the bar's
+     wordmark stays crisp on, and would need re-exporting for each
+     one. */
+  .hero__lockup {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 var(--gutter);
+    text-align: center;
+    color: #fff;
+  }
+
+  /* No shadow of any kind on the mark — not a text-shadow, and not a scrim
+     shaped to sit behind it. The even grade above carries it. */
+  .hero__wordmark {
+    font-family: var(--font-wordmark);
+    /* Reads at roughly a third of the frame, as drawn. The floor is set by the
+       LINE, not by the mark: the line cannot go under about 12px and stay
+       readable, and at 12px the mark has to reach ~62px for the two to keep
+       their 85% proportion. A lower floor here left the line wider than the
+       mark on a phone, which reads as a caption that outgrew its title. */
+    font-size: clamp(62px, 6.6vw, 94px);
+    font-weight: 500;
+    letter-spacing: -0.075em;
+    line-height: 1;
+    /* CANCELS MOST OF THE DESCENDER SPACE. Nohemi reserves 0.19em below the
+       baseline for descenders and "newstreet" has none — nine letters, not one
+       of them reaching below the line — so that space was empty and was holding
+       the lockup apart by itself. Pulling back all of it closed the gap to 12px
+       and read as crowded, so about two thirds comes off and the rest stays as
+       the lockup's actual breathing room. Set in em so it scales with the
+       mark. */
+    margin-bottom: -0.08em;
+  }
+  .hero__wordmark-light {
+    font-weight: 200;
+  }
+
+  /* SIZED BY WIDTH AGAINST THE MARK, NOT AT A UI SCALE. The line sets to about
+     85% of the wordmark's width, which is what makes the two read as one
+     lockup — the line tucked just inside the mark's measure rather than
+     floating under it. That lands at roughly 0.19 of the wordmark's size;
+     matching cap heights by eye instead gives a line half again too big.
+     Both are driven off the same vw so the proportion holds at every width.
+
+     At this size the tracking that helped it as a caption works against it, so
+     it is set nearly solid. Held tight to the mark, too: "newstreet" carries no
+     descenders at all, so nothing below the baseline supplies optical gap and
+     any margin here reads at full value. */
+  .hero__line {
+    margin-top: 0;
+    font-family: var(--font-text);
+    font-size: clamp(12px, 1.27vw, 18px);
+    font-weight: 300;
+    /* Solid. The inherited body leading put half a line of air above the caps,
+       which on a one-line lockup is gap, not rhythm. */
+    line-height: 1;
+    letter-spacing: 0.004em;
+    color: rgba(255, 255, 255, 0.92);
+  }
+  /* The two words that carry the claim. Emphasis is relative, so as the line
+     got lighter these came down with it — 300 against 400 holds the same
+     distinction 400 against 600 did, without either weight reading as bold. */
+  .hero__line-strong {
+    font-weight: 400;
+    color: #fff;
+  }
+
+  @media (max-width: 640px) {
+    .hero__line {
+      letter-spacing: 0.02em;
+    }
+  }
+</style>
+
+<script>
+  /* The film is an enhancement over the poster, in both directions.
+     Reduced motion holds the still — the poster is the same frame, so the page
+     loses nothing but the movement. And iOS occasionally declines the initial
+     autoplay even when every condition is met, so the play is asked for once
+     more rather than left to the attribute alone. */
+  const film = document.querySelector('.hero__video');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  /* One source of truth for the breakpoint, matching the media query above. */
+  const wide = window.matchMedia('(min-width: 681px)');
+
+  /* THE SOURCE IS ATTACHED HERE, NOT IN THE MARKUP. A `src` on the element
+     downloads 16MB on every device that parses the page, whatever CSS does
+     with it afterwards. Wide viewports get the film; phones never ask for it.
+     A phone rotated or a window dragged wider attaches it then. */
+  const attachFilm = () => {
+    if (!(film instanceof HTMLVideoElement)) return;
+    if (!wide.matches || film.src) return;
+    film.src = film.dataset.src;
+    if (!reduced.matches) {
+      film.play().catch(() => {
+        /* Autoplay refused. The poster stands in and says the same thing. */
+      });
+    }
+  };
+
+  if (film instanceof HTMLVideoElement) {
+    if (reduced.matches) film.removeAttribute('autoplay');
+    attachFilm();
+    wide.addEventListener('change', attachFilm);
+  }
+
+  /* ---- The mobile carousel ----------------------------------
+     Steps only while the phone layout is on screen and only while the tab is
+     visible — a timer running against a hidden document burns battery to
+     advance frames nobody is looking at. Reduced motion never starts it, so
+     the set stays on the first building. */
+  const frames = [...document.querySelectorAll('.hero__frame')];
+
+  if (frames.length > 1 && !reduced.matches) {
+    let index = 0;
+    let timer = null;
+
+    const step = () => {
+      frames[index].classList.remove('is-current');
+      index = (index + 1) % frames.length;
+      frames[index].classList.add('is-current');
+    };
+
+    const sync = () => {
+      const shouldRun = !wide.matches && document.visibilityState === 'visible';
+      if (shouldRun && timer === null) timer = window.setInterval(step, 5000);
+      if (!shouldRun && timer !== null) {
+        window.clearInterval(timer);
+        timer = null;
+      }
+    };
+
+    wide.addEventListener('change', sync);
+    document.addEventListener('visibilitychange', sync);
+    sync();
+  }
+</script>

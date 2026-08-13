@@ -1,0 +1,526 @@
+---
+/**
+ * Navigation — the transparent-to-dark scroll transition is inherited from V3 and
+ * binding. Height, type, and structure are new.
+ */
+const { transparent = false } = Astro.props;
+
+/* Investment Strategy has no page of its own: the lifecycle and the principles
+   that make up that content live on the investors page. This pointed at
+   `#lifecycle` so the label landed on its own section, but a nav item that
+   drops the reader into the middle of a page they have not seen the top of
+   reads as a mis-load, not as precision — the hero that says what the page is
+   goes past before they can read it. It opens the page, and the page's own
+   order does the rest. */
+const firmLinks = [
+  { label: 'About the Firm', href: '/about' },
+  { label: 'Investment Strategy', href: '/investors' },
+  { label: 'Team', href: '/team' },
+];
+---
+
+<nav class:list={['nav', !transparent && 'nav--solid']} id="nav">
+  <a class="nav__brand" href="/">new<span class="nav__brand-light">street</span></a>
+
+  <div class="nav__links">
+    <a class="nav__link" href="/portfolio">Portfolio</a>
+
+    <div class="nav__item">
+      <button
+        class="nav__link nav__trigger"
+        type="button"
+        aria-expanded="false"
+        aria-controls="nav-firm"
+      >
+        Firm<span class="nav__caret" aria-hidden="true"></span>
+      </button>
+      <div class="nav__menu" id="nav-firm">
+        {firmLinks.map((link) => (
+          <a class="nav__menu-link" href={link.href}>{link.label}</a>
+        ))}
+      </div>
+    </div>
+
+    <a class="nav__link" href="/press">Press</a>
+    <!-- Plain link, deliberately. Investor Relations is the site's one primary
+         action and carries the only action treatment in the bar; a second
+         button here would make neither of them read as the first thing. -->
+    <a class="nav__link" href="/contact">Contact</a>
+    <a class="nav__link nav__link--action" href="/investors">Investor Relations</a>
+  </div>
+
+  <!-- ===== Mobile =============================================
+       BELOW 680 THE LINKS ARE HIDDEN AND THIS IS WHAT REPLACES THEM.
+       They were hidden with nothing put in their place, so a phone
+       could reach exactly one route from the bar — Investor
+       Relations — and Portfolio, Firm, Press and Contact were
+       unreachable from every page of the site.
+
+       The panel carries every route, Investor Relations included.
+       That action held its place in the bar at first, which left a
+       phone showing a wordmark, a bordered button, and a menu mark
+       — three competing elements in 58px — and made the one route
+       already reachable the only one advertised. It moves inside,
+       and keeps the action treatment there so it still reads as the
+       primary thing in the list.
+
+       Firm's three links are flattened into the list rather than
+       nested behind a second disclosure — a dropdown inside a menu
+       is a second tap for three items that fit. -->
+  <button
+    class="nav__toggle"
+    type="button"
+    aria-expanded="false"
+    aria-controls="nav-panel"
+    aria-label="Menu"
+  >
+    <span class="nav__bars" aria-hidden="true"></span>
+  </button>
+
+  <div class="nav__panel" id="nav-panel" hidden>
+    <a class="nav__panel-link" href="/portfolio">Portfolio</a>
+    {firmLinks.map((link) => (
+      <a class="nav__panel-link" href={link.href}>{link.label}</a>
+    ))}
+    <a class="nav__panel-link" href="/press">Press</a>
+    <a class="nav__panel-link" href="/contact">Contact</a>
+    <a class="nav__panel-action" href="/investors">Investor Relations</a>
+  </div>
+</nav>
+
+<style>
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* Fixed height, ~56px. V3 animated padding from 24px to 16px on scroll; that
+       animated layout and made content appear to shift under the bar. */
+    padding: 16px var(--gutter);
+    color: #fff;
+  }
+
+  /* The dark bar that slides in on scroll — inherited from V3. */
+  .nav::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(18, 18, 18, 0.78);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    transform: translateY(-100%);
+    transition: transform 0.6s var(--ease);
+    z-index: -1;
+  }
+
+  /* A hairline that expands from center on scroll — inherited from V3. */
+  .nav::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    right: 50%;
+    bottom: 0;
+    height: 1px;
+    background: var(--rule-on-dark);
+    transition: left 0.7s var(--ease) 0.1s, right 0.7s var(--ease) 0.1s;
+  }
+
+  .nav.is-scrolled::before {
+    transform: translateY(0);
+  }
+  .nav.is-scrolled::after {
+    left: 0;
+    right: 0;
+  }
+
+  /* Pages without a hero start in the scrolled state. */
+  .nav--solid::before {
+    transform: translateY(0);
+  }
+  .nav--solid::after {
+    left: 0;
+    right: 0;
+  }
+
+  /* --- Wordmark ------------------------------------------------
+     Sized so the bar clears it top and bottom rather than hugging it. */
+  .nav__brand {
+    font-family: var(--font-wordmark);
+    font-size: 21px;
+    font-weight: 500;
+    letter-spacing: -0.075em;
+    line-height: 1;
+    z-index: 1;
+  }
+  .nav__brand-light {
+    font-weight: 200;
+  }
+
+
+  .nav__links {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    z-index: 1;
+  }
+
+  .nav__link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-text);
+    font-size: var(--size-label);
+    font-weight: 500;
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: inherit;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    /* Body line-height would inflate a 10px label to 16px and drive the bar height. */
+    line-height: 1;
+    padding: 6px 0;
+  }
+  .nav__link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 2px;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.45s var(--ease-out);
+  }
+  .nav__link:hover::after {
+    transform: scaleX(1);
+  }
+
+  /* --- Firm dropdown ------------------------------------------- */
+  /* FLEX, SO THE TRIGGER SITS LEVEL WITH THE PLAIN LINKS. As a block, this
+     wrapper generated a line box around its inline-flex button and inherited
+     the body's line-height, making it 23px tall against the button's 22px.
+     `.nav__links` then centred the 23px wrapper, leaving Firm half a pixel
+     below Portfolio, Press, and Contact — enough to read as out of line.
+     Flex makes the wrapper the height of the button and no line box exists. */
+  .nav__item {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .nav__caret {
+    width: 5px;
+    height: 5px;
+    border-right: 1px solid currentColor;
+    border-bottom: 1px solid currentColor;
+    transform: translateY(-2px) rotate(45deg);
+    transition: transform 0.35s var(--ease-out);
+  }
+  .nav__item:hover .nav__caret,
+  .nav__item:focus-within .nav__caret {
+    transform: translateY(0) rotate(45deg);
+  }
+
+  .nav__menu {
+    position: absolute;
+    top: calc(100% + 14px);
+    left: -18px;
+    min-width: 200px;
+    display: grid;
+    padding: 6px 0;
+    background: rgba(18, 18, 18, 0.92);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    border: 1px solid var(--rule-on-dark);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition:
+      opacity 0.3s var(--ease-out),
+      transform 0.3s var(--ease-out),
+      visibility 0s linear 0.3s;
+  }
+  .nav__item:hover .nav__menu,
+  .nav__item:focus-within .nav__menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    transition-delay: 0s, 0s, 0s;
+  }
+
+  .nav__menu-link {
+    padding: 10px 18px;
+    font-size: var(--size-label);
+    font-weight: 500;
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    line-height: 1;
+    color: var(--on-dark-soft);
+    white-space: nowrap;
+    transition: color 0.25s var(--ease-out), background 0.25s var(--ease-out);
+  }
+  .nav__menu-link:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  /* --- Investor relations -------------------------------------- */
+  .nav__link--action {
+    padding: 7px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+  }
+  .nav__link--action::after {
+    display: none;
+  }
+  .nav__link--action:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  @media (max-width: 900px) {
+    .nav__links {
+      gap: 18px;
+    }
+    .nav__link {
+      font-size: 9px;
+      letter-spacing: 0.14em;
+    }
+  }
+
+  /* --- Mobile menu --------------------------------------------
+     The toggle is a 44px target with an 18px mark inside it, so the tap area
+     meets the floor without the drawn bars growing to match. Three bars become
+     an X on open: the outer two rotate onto each other and the middle fades,
+     which is one element moving rather than a glyph swap — the same principle
+     as the `+` that becomes a `−` on the disclosures. */
+  .nav__toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    margin-right: -12px;
+    padding: 0;
+    background: none;
+    border: 0;
+    color: inherit;
+    cursor: pointer;
+  }
+  .nav__bars,
+  .nav__bars::before,
+  .nav__bars::after {
+    display: block;
+    width: 18px;
+    height: 1px;
+    background: currentColor;
+    transition: transform 0.35s var(--ease-out), background 0.2s var(--ease-out);
+  }
+  /* Positioned, so the two arms resolve against this span rather than against
+     `.nav` — the nearest positioned ancestor is otherwise the fixed bar. */
+  .nav__bars {
+    position: relative;
+  }
+  .nav__bars::before,
+  .nav__bars::after {
+    content: '';
+    position: absolute;
+    left: 0;
+  }
+  .nav__bars::before {
+    transform: translateY(-6px);
+  }
+  .nav__bars::after {
+    transform: translateY(6px);
+  }
+  /* THE MIDDLE BAR GOES TRANSPARENT, IT DOES NOT FADE. `opacity` on this span
+     applies to its generated content too, and no `opacity: 1` on a child can
+     win that back — the whole mark disappeared and the X never showed. Only
+     the middle rule needs to go, so only its colour is dropped. */
+  .nav.is-open .nav__bars {
+    background: transparent;
+  }
+  .nav.is-open .nav__bars::before {
+    transform: translateY(0) rotate(45deg);
+  }
+  .nav.is-open .nav__bars::after {
+    transform: translateY(0) rotate(-45deg);
+  }
+
+  /* The sheet hangs off the bar's own bottom edge and takes the same ground the
+     scrolled bar uses, so the two read as one object rather than as a panel
+     floating over the page.
+
+     IT RUNS TO THE FOOT OF THE SCREEN. Sized to its contents it stopped around
+     the middle of the viewport, with the page showing beneath — which reads as
+     a dropdown that ran out rather than as a menu, and puts live page content
+     under an open overlay. `100dvh` rather than `vh` because mobile browser
+     chrome changes the viewport as it hides, and `vh` leaves a strip of page
+     visible at the bottom on iOS. It scrolls internally so a longer list, or a
+     short landscape window, cannot put a link out of reach. */
+  .nav__panel {
+    position: fixed;
+    top: var(--nav-height);
+    left: 0;
+    right: 0;
+    height: calc(100dvh - var(--nav-height));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0 var(--gutter) var(--s-xl);
+    background: rgba(18, 18, 18, 0.98);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+  }
+  .nav__panel[hidden] {
+    display: none;
+  }
+  .nav__panel-link {
+    display: block;
+    padding: var(--s-md) 0;
+    border-bottom: 1px solid var(--rule-on-dark);
+    font-family: var(--font-text);
+    font-size: var(--size-label);
+    font-weight: 500;
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.86);
+  }
+  .nav__panel-link:last-child {
+    border-bottom: 0;
+  }
+  .nav__panel-link:hover {
+    color: #fff;
+  }
+
+  /* The same bordered treatment the bar gives this route, so it still reads as
+     the primary action once it is inside the list. Full width because it is the
+     foot of a stacked sheet, not one item in a row. */
+  .nav__panel-action {
+    display: block;
+    margin-top: var(--s-md);
+    padding: var(--s-md);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    font-family: var(--font-text);
+    font-size: var(--size-label);
+    font-weight: 500;
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    text-align: center;
+    color: #fff;
+  }
+  .nav__panel-action:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  /* Open over a transparent hero, the bar has to take its ground or the panel
+     hangs off nothing. */
+  .nav.is-open::before {
+    transform: translateY(0);
+  }
+
+  /* The whole link row goes, action included — the bar is the wordmark and the
+     menu mark, and everything else is inside the sheet. */
+  @media (max-width: 680px) {
+    .nav__links {
+      display: none;
+    }
+    .nav__toggle {
+      display: inline-flex;
+    }
+  }
+
+  /* Above the breakpoint the full bar is present, so the sheet must not be
+     reachable — a resize with the menu open would otherwise leave it on screen
+     next to the links it duplicates. */
+  @media (min-width: 681px) {
+    .nav__panel {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const nav = document.getElementById('nav');
+
+  if (nav && !nav.classList.contains('nav--solid')) {
+    const sync = () => nav.classList.toggle('is-scrolled', window.scrollY > 40);
+    sync();
+    window.addEventListener('scroll', sync, { passive: true });
+  }
+
+  // The menu opens on hover and on focus via CSS; aria-expanded is kept in sync
+  // for assistive tech, and Escape closes it.
+  const item = nav?.querySelector('.nav__item');
+  const trigger = item?.querySelector('.nav__trigger');
+
+  if (item && trigger) {
+    const setExpanded = (open) => trigger.setAttribute('aria-expanded', String(open));
+
+    item.addEventListener('pointerenter', () => setExpanded(true));
+    item.addEventListener('pointerleave', () => setExpanded(false));
+    item.addEventListener('focusin', () => setExpanded(true));
+    item.addEventListener('focusout', (event) => {
+      if (!item.contains(event.relatedTarget)) setExpanded(false);
+    });
+
+    item.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        setExpanded(false);
+        trigger.blur();
+      }
+    });
+  }
+
+  /* ---- Mobile sheet ------------------------------------------
+     `hidden` is the state, not a class, so the panel is genuinely out of the
+     accessibility tree and out of the tab order when closed — a CSS-only hide
+     leaves the links focusable behind a bar that does not show them.
+
+     It closes on Escape, on a tap outside the bar, and on following a link.
+     That last one matters on the routes that scroll to a fragment: the sheet
+     covers the band the anchor lands on, so leaving it open would put the
+     reader's destination behind it. */
+  const toggle = nav?.querySelector('.nav__toggle');
+  const panel = nav?.querySelector('.nav__panel');
+
+  if (nav && toggle && panel) {
+    const setOpen = (open) => {
+      nav.classList.toggle('is-open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+      panel.hidden = !open;
+      /* The sheet covers the screen, so the page behind it must not scroll —
+         without this a swipe over the menu moves the document underneath and
+         the reader closes it to find they have lost their place. */
+      document.body.style.overflow = open ? 'hidden' : '';
+    };
+
+    toggle.addEventListener('click', () => setOpen(panel.hidden));
+
+    panel.addEventListener('click', (event) => {
+      if (event.target.closest('a')) setOpen(false);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !panel.hidden) {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!panel.hidden && !nav.contains(event.target)) setOpen(false);
+    });
+
+    /* Resized up to the full bar, the sheet is display:none but still `hidden`
+       false and still marked expanded. Reset it so the state the markup
+       reports matches the one the reader can see. */
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 680 && !panel.hidden) setOpen(false);
+    });
+  }
+</script>

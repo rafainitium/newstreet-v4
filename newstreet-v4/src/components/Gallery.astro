@@ -1,0 +1,311 @@
+---
+/**
+ * Gallery — a horizontal rail of images on one shared height.
+ *
+ * V3's project pages scrolled their renders sideways and V4's first pass
+ * replaced that with a two-column grid on a forced 3:2 crop. The grid was the
+ * wrong trade: a set of eight renders became a tall stack the reader falls
+ * through on the way to the Close, and cropping every frame to 3:2 flattened
+ * the one thing a tower render is about. The rail is back, rebuilt on this
+ * system rather than ported from V3.
+ *
+ * What makes it a set is a SHARED HEIGHT, not a shared ratio. Each image keeps
+ * its native proportion — a portrait tower stays a portrait, a street view
+ * stays wide — and the common baseline is what lines them up. The card is sized
+ * by the image inside it: height is fixed, width falls out of the intrinsic
+ * ratio the Photo manifest already writes onto the tag.
+ *
+ * Not carried over from V3: the lightbox (nothing in a render needs opening
+ * full-screen), the hover zoom (it promises a click that is not there), and the
+ * dark ground (the Close is the page's dark band, and a dark gallery directly
+ * above it merges the two into one unbroken field).
+ */
+import Photo from './Photo.astro';
+
+const { images, label = 'Gallery', id = 'gallery-heading' } = Astro.props;
+---
+
+<section class="band band--paper gallery-section" data-gallery aria-labelledby={id}>
+  <div class="band__inner">
+    <div class="section-header section-header--compact">
+      <div class="section-header__text">
+        <h2 id={id} class="kicker">{label}</h2>
+      </div>
+
+      <!-- Hidden until the script confirms the rail actually overflows: a
+           project with one render has nothing to page through, and the buttons
+           need JavaScript to work at all. The rail itself scrolls by touch and
+           trackpad without them. -->
+      <div class="section-header__action gallery__nav">
+        <button class="gallery__btn" type="button" data-gallery-dir="-1" aria-label="Previous image">
+          <span aria-hidden="true">←</span>
+        </button>
+        <button class="gallery__btn" type="button" data-gallery-dir="1" aria-label="Next image">
+          <span aria-hidden="true">→</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Outside band__inner so the rail can run to the viewport edge. A rail that
+       stops short of the edge reads as a grid that ran out of room; one that is
+       cut off by the edge reads as a set that continues. -->
+  <div
+    class="gallery__rail"
+    role="group"
+    aria-label={`${label} — scroll for more`}
+    tabindex="0"
+  >
+    {images.map((image) => (
+      <figure class="gallery__card">
+        <Photo
+          class="gallery__img"
+          src={image.src}
+          alt={image.alt}
+          sizes="(max-width: 640px) 86vw, 62vw"
+        />
+      </figure>
+    ))}
+  </div>
+
+  <div class="band__inner">
+    <!-- The same hairline the home hero uses for its slide timer, here carrying
+         distance instead of time. Width is the share of the set on screen, so
+         the reader can see how much is left as well as where they are. -->
+    <div class="gallery__progress" aria-hidden="true">
+      <span class="gallery__progress-fill"></span>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* The rail supplies its own bottom space; the band's padding would double it. */
+  .gallery-section {
+    padding-bottom: var(--s-xl);
+  }
+
+  /* ---- Rail -------------------------------------------------
+     Bled out of the band's gutter to the viewport edge, then padded
+     back in so the FIRST card lands on the page grid — flush with
+     the section header above it and every other left edge on the
+     site. On viewports wider than the 1440 container the padding
+     grows to keep that alignment. */
+  .gallery__rail {
+    --gallery-pad: calc(var(--gutter) + max(0px, (100% - 1440px) / 2));
+
+    position: relative;
+    display: flex;
+    gap: var(--s-lg);
+    margin-inline: calc(var(--gutter) * -1);
+    margin-top: var(--s-xl);
+    padding-inline: var(--gallery-pad);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    /* Snap positions are measured from the snapport, not the padding box, so
+       without this every card after the first would snap to the raw viewport
+       edge and sit a gutter left of the grid. */
+    scroll-padding-inline: var(--gallery-pad);
+    scrollbar-width: none;
+  }
+  .gallery__rail::-webkit-scrollbar {
+    display: none;
+  }
+  /* The rail is a focusable scroll region — arrow keys drive it. The ring is
+     inset so it is not clipped by the container's own overflow. */
+  .gallery__rail:focus-visible {
+    outline-offset: -2px;
+  }
+
+  .gallery__card {
+    flex: none;
+    /* One height for the set. Everything else about a card is the image's. */
+    height: clamp(340px, 46vw, 660px);
+    scroll-snap-align: start;
+    /* A reader who overshoots by a flick still lands on an image rather than
+       three images downstream. */
+    scroll-snap-stop: always;
+    background: var(--paper-band);
+  }
+  .gallery__img {
+    height: 100%;
+    width: auto;
+    /* base.css caps every image at its container's width; here the container is
+       sized BY the image, so the cap would squash wide frames. */
+    max-width: none;
+  }
+
+  /* ---- Controls ---------------------------------------------
+     Square and hairline — the system has no circles, and the stage
+     mark and primary action are both rectangles. Inverts on hover
+     on the same principle as .action. */
+  .gallery__nav {
+    display: none;
+    gap: var(--s-xs);
+  }
+  .gallery-section.is-scrollable .gallery__nav {
+    display: flex;
+  }
+
+  .gallery__btn {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--rule-strong);
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    font-size: var(--size-body);
+    line-height: 1;
+    cursor: pointer;
+    transition:
+      background 0.35s var(--ease-out),
+      color 0.35s var(--ease-out),
+      border-color 0.35s var(--ease-out),
+      opacity 0.35s var(--ease-out);
+  }
+  .gallery__btn:hover:not(:disabled) {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
+  }
+  /* At either end the button stays in place and stops being live — removing it
+     would shift the pair sideways every time the reader reaches an edge. */
+  .gallery__btn:disabled {
+    opacity: 0.28;
+    cursor: default;
+  }
+
+  /* ---- Progress --------------------------------------------- */
+  .gallery__progress {
+    display: none;
+    position: relative;
+    height: 1px;
+    margin-top: var(--s-lg);
+    background: var(--rule);
+    overflow: hidden;
+  }
+  .gallery-section.is-scrollable .gallery__progress {
+    display: block;
+  }
+  .gallery__progress-fill {
+    position: absolute;
+    inset: 0;
+    background: var(--ink);
+    transform-origin: left center;
+    /* Transform only: the indicator must not animate a layout property. */
+    transform: scaleX(0);
+  }
+
+  @media (max-width: 640px) {
+    .gallery__card {
+      height: clamp(300px, 68vw, 420px);
+    }
+    .gallery__btn {
+      width: 40px;
+      height: 40px;
+    }
+  }
+</style>
+
+<script>
+  /* Progressive enhancement, on the same terms as the portfolio map: the rail
+     is a real scroll container before this runs, and the buttons and the
+     progress line only appear once it confirms there is something to page. */
+  document.querySelectorAll('[data-gallery]').forEach((root) => {
+    const rail = root.querySelector('.gallery__rail');
+    const fill = root.querySelector('.gallery__progress-fill');
+    const buttons = Array.from(root.querySelectorAll('[data-gallery-dir]'));
+    if (!rail || !fill) return;
+
+    const cards = Array.from(rail.querySelectorAll('.gallery__card'));
+    if (cards.length === 0) return;
+
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const behavior = reduced ? 'auto' : 'smooth';
+
+    const sync = () => {
+      const max = rail.scrollWidth - rail.clientWidth;
+      const scrollable = max > 1;
+      root.classList.toggle('is-scrollable', scrollable);
+
+      if (scrollable) {
+        // Position and extent in one mark: where the reader is, and how much of
+        // the set is on screen.
+        const offset = rail.scrollLeft / rail.scrollWidth;
+        const share = rail.clientWidth / rail.scrollWidth;
+        fill.style.transform = `translateX(${offset * 100}%) scaleX(${share})`;
+      }
+
+      buttons.forEach((btn) => {
+        const forward = btn.dataset.galleryDir === '1';
+        btn.disabled = !scrollable || (forward ? rail.scrollLeft >= max - 1 : rail.scrollLeft <= 1);
+      });
+    };
+
+    /* Card edges are measured against the first card rather than against the
+       rail's padding box, so the maths does not have to know what the padding
+       resolved to at this viewport. */
+    const base = () => cards[0].offsetLeft;
+    const positionOf = (i) => cards[i].offsetLeft - base();
+
+    /* The buttons step an INTENDED index; they do not ask where the rail
+       currently is. A smooth scroll takes a few hundred milliseconds, and a
+       reader who clicks twice inside that window would otherwise have the
+       second click read a scrollLeft still in flight, conclude the next card
+       is the one already being scrolled to, and restart the same animation —
+       the rail sticks on the second image no matter how often it is clicked. */
+    let index = 0;
+
+    const advance = (dir) => {
+      index = Math.max(0, Math.min(index + dir, cards.length - 1));
+      rail.scrollTo({ left: positionOf(index), behavior });
+    };
+
+    /* The rail is scrollable by hand as well, so the intended index is
+       re-derived from where the reader actually came to rest. Debounced rather
+       than run on every scroll event: mid-animation the nearest card is not the
+       one being travelled to. */
+    let settleTimer;
+    const settle = () => {
+      const here = rail.scrollLeft;
+      index = cards.reduce(
+        (nearest, _, i) =>
+          Math.abs(positionOf(i) - here) < Math.abs(positionOf(nearest) - here) ? i : nearest,
+        0,
+      );
+      sync();
+    };
+
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => advance(Number(btn.dataset.galleryDir)));
+    });
+
+    let queued = false;
+    rail.addEventListener(
+      'scroll',
+      () => {
+        clearTimeout(settleTimer);
+        settleTimer = setTimeout(settle, 140);
+
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(() => {
+          queued = false;
+          sync();
+        });
+      },
+      { passive: true },
+    );
+
+    /* A resize moves every card, so the index has to be read off the rail
+       again rather than trusted. */
+    window.addEventListener('resize', settle);
+    /* A late-decoding image changes the rail's extent after first paint, and
+       the manifest's width/height mean that happens without a layout shift —
+       so nothing else would tell us to re-measure. */
+    rail.addEventListener('load', sync, true);
+
+    sync();
+  });
+</script>

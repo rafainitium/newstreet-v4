@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "newstreet-v4",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["newstreet-v4/node_modules/.bin/astro", "dev", "--root", "newstreet-v4", "--port", "4321"],
+      "port": 4321
+    },
+    {
+      "name": "newstreet-v4-prod",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["newstreet-v4/node_modules/.bin/astro", "preview", "--root", "newstreet-v4", "--port", "4322"],
+      "port": 4322
+    }
+  ]
+}

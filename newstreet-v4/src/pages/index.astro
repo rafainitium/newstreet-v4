@@ -1,0 +1,453 @@
+---
+/**
+ * DIRECTION CONTRACT — Home
+ *
+ * THESIS: An institutional offering document rendered for the screen. It refuses the
+ * multifamily-developer default of amenity photography and lifestyle adjectives; the
+ * proof is disclosure, at reading size.
+ * OWN-WORLD: Strictly monochrome — white, neutral gray, and near-black, with no accent
+ * hue anywhere including data and state colors. Separation is carried by band ground
+ * and horizontal hairlines only. Libre Caslon Display for every heading and every
+ * published figure; Libre Franklin at 14px and 10px for everything else. All square.
+ * STORY: An LP arrives from a referral, meets one loud viewport, is introduced to the
+ * firm, sees its scale, then its method, work, and people — and requests information.
+ * FIRST VIEWPORT: Full-bleed drone video of a Newstreet site as ground, with the
+ * wordmark alone at the lower left on the page grid — no headline, no claim. The
+ * firm introduces itself in the next section, then the pipeline figures.
+ * FORM: Brief-pinned by the client's reference wireframe; no roll. The nav's
+ * transparent-to-dark transition is the one inherited carve-out.
+ */
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Photo from '../components/Photo.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import portfolio from '../data/projects.json';
+import press from '../data/press.json';
+/* `differentiators` is no longer imported: the Difference band points at About
+   the Firm instead of restating it here. The set is still authored in firm.js
+   and nothing else renders it — it is copy waiting for a home, not dead data. */
+import { lifecycle } from '../lib/firm.js';
+
+const { totals, projects } = portfolio;
+
+const AS_OF = 'March 31, 2026';
+
+/**
+ * Published figures round DOWN from the project record and carry a "+", so the
+ * headline number is never larger than the underlying reality.
+ */
+const roundDown = (value, step) => Math.floor(value / step) * step;
+const millions = (value) => `${(Math.floor(value / 100_000) / 10).toFixed(1)}M`;
+
+const figures = [
+  { value: `${roundDown(totals.pipelineUnits, 100).toLocaleString()}+`, label: 'Units in pipeline' },
+  { value: `${millions(totals.pipelineSqft)}+`, label: 'SF in pipeline' },
+  { value: String(totals.activeDevelopments), label: 'Active developments' },
+  { value: String(totals.underConstruction), label: 'Under construction' },
+];
+
+const featuredProjects = projects.slice(0, 3);
+const recentPress = press.articles.slice(0, 5);
+
+const formatDate = (iso) =>
+  iso
+    ? new Date(`${iso}T00:00:00`).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      })
+    : '';
+---
+
+<Base
+  title="Newstreet | Institutional Multifamily Investment & Development"
+  description="Newstreet is a Chicago-based multifamily investment and development firm operating across the full investment lifecycle — sourcing, underwriting, capitalization, development, asset management, and realization."
+  transparentNav={true}
+>
+  <Hero />
+
+  <!-- ===== Introduction =====================================
+       SPLIT, NOT PAIRED — the same object the portfolio page's
+       Record block uses: kicker alone in the left column, heading
+       and prose in the right, and nothing in between. This ran as
+       an image-beside-text pair; the photograph is gone with it.
+
+       The claim is the content here. A groundbreaking frame beside
+       it was atmosphere competing with the page's opening
+       statement, and the hero directly above already carries the
+       photography. -->
+  <section class="band band--paper band--flush-top" aria-labelledby="intro-heading">
+    <div class="band__inner">
+      <div class="grid rise">
+        <span class="kicker grid__kicker">Newstreet</span>
+
+        <div class="grid__main">
+          <h2 id="intro-heading" class="display">
+            Institutional discipline,<br />local execution
+          </h2>
+          <p class="prose">
+            Newstreet is a Chicago-based, vertically integrated multifamily development
+            firm acquiring, entitling, and developing infill housing in the nation's most
+            desirable neighborhoods with durable demand and long-term growth potential.
+          </p>
+          <p class="prose">
+            Built to hold, structured to sell. We develop properties with institutional
+            underwriting discipline and the power of local execution, creating assets that
+            perform across market cycles while preserving the flexibility for future
+            disposition.
+          </p>
+          <a class="action-link" href="/about">
+            About the firm <span class="action-link__arrow">→</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===== By the numbers ===================================
+       The ground alternation starts here: the introduction is the
+       only white band before it. -->
+  <section class="band band--tint" aria-labelledby="figures-heading">
+    <div class="band__inner rise">
+      <div class="section-header section-header--compact">
+        <div class="section-header__text">
+          <h2 id="figures-heading" class="kicker">By the numbers</h2>
+        </div>
+        <p class="section-header__action meta">As of {AS_OF}</p>
+      </div>
+
+      <div class="ledger__row">
+        {figures.map((f) => (
+          <div>
+            <div class="ledger__value">{f.value}</div>
+            <div class="ledger__label">{f.label}</div>
+          </div>
+        ))}
+      </div>
+
+      <p class="ledger__note">
+        Pipeline figures exclude stabilized assets, derived from the project record and
+        rounded down.
+      </p>
+    </div>
+  </section>
+
+  <!-- ===== Featured work ==================================== -->
+  <section class="band band--paper" aria-labelledby="portfolio-heading">
+    <div class="band__inner">
+      <div class="section-header rise">
+        <div class="section-header__text">
+          <span class="kicker">Our Work</span>
+          <h2 id="portfolio-heading" class="display">Featured projects</h2>
+        </div>
+        <a class="action-link section-header__action" href="/portfolio">
+          All projects <span class="action-link__arrow">→</span>
+        </a>
+      </div>
+
+      <div class="projects rise">
+        {featuredProjects.map((project) => <ProjectCard project={project} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== The Newstreet difference =========================
+       SPLIT, matching the introduction and Leadership. This ran a
+       stacked header over four `differentiators` columns — Selective
+       by design, Local expertise, Information advantage,
+       Institutional discipline — which is the home page arguing the
+       case rather than pointing at it. Every one of those four is
+       made properly on About the Firm: the advantage band carries
+       the sourcing claim and the criteria carry the discipline. Two
+       sentences and a link do the work the columns were doing, and
+       the page stops answering a question it should be raising.
+
+       The link lands on `#advantage` rather than the top of the
+       page — a reader sent from this block is asking about the
+       advantage specifically, and the band clears the nav on
+       arrival via the `.band[id]` scroll-margin rule. -->
+  <section class="band band--tint" aria-labelledby="difference-heading">
+    <div class="band__inner">
+      <div class="grid rise">
+        <span class="kicker grid__kicker">The Newstreet Difference</span>
+
+        <div class="grid__main">
+          <h2 id="difference-heading" class="display">
+            A competitive advantage built into every investment
+          </h2>
+          <p class="prose">
+            Our approach is shaped by a shared standard of accountability, judgment, and
+            execution. Discover the Newstreet advantage that enables us to identify and
+            deliver successful developments.
+          </p>
+          <a class="action-link" href="/about#advantage">
+            About the firm <span class="action-link__arrow">→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Investment lifecycle =============================
+       THE NAMES ONLY, BECAUSE /investors CARRIES THE TEXT. This
+       ran the same `.phases` grid as the investors page against
+       the same `lifecycle` module — the identical six headings and
+       the identical six bodies, twice on one site. Duplicated word
+       for word, the second copy tells a reader nothing and quietly
+       says the deeper page is not worth the click.
+
+       So the home page keeps the order and gives up the detail:
+       six names, numbered, and a link. /investors is unchanged and
+       remains the full account. Both still read from `lifecycle`,
+       so the phases cannot drift apart — only what is shown of
+       them differs.
+
+       Form is the paired image-beside-text object, the same one
+       the investors page's Reporting section uses, portrait
+       figure and all. The number stays: in this system a number
+       means order, and order is the whole point of a lifecycle. -->
+  <section class="band band--paper" aria-labelledby="lifecycle-heading">
+    <div class="band__inner paired paired--portrait">
+      <figure class="paired__figure rise">
+        <Photo
+          src="Media/pexels-blue-19698298.jpg"
+          alt="A Chicago high-rise seen from below, its glass and steel face rising the full height of the frame"
+          sizes="(max-width: 900px) 100vw, 45vw"
+        />
+      </figure>
+
+      <div class="paired__text rise">
+        <span class="kicker">Investment Lifecycle</span>
+        <h2 id="lifecycle-heading" class="display">A typical investment lifecycle</h2>
+        <p class="prose">
+          From sourcing an opportunity to realizing its value, a real estate investment
+          moves through a series of distinct phases. While each investment is different,
+          the lifecycle below provides a general framework for how opportunities are
+          evaluated, executed, and managed through ownership.
+        </p>
+
+        <ol class="stages">
+          {lifecycle.map((step, i) => (
+            <li class="stages__item">
+              <span class="stages__num">{String(i + 1).padStart(2, '0')}</span>
+              <span class="stages__name">{step.phase}</span>
+            </li>
+          ))}
+        </ol>
+
+        <a class="action-link" href="/investors#lifecycle">
+          Investment strategy <span class="action-link__arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Leadership =======================================
+       Split, matching the introduction and the portfolio Record.
+       The team photograph came out with the pairing: /team opens
+       on that same subject at full width, so showing it here spent
+       the section's whole height introducing a page one line of
+       prose and a link already introduce.
+
+       `data-band="leadership"` went too — nothing read it. -->
+  <section class="band band--tint" aria-labelledby="leadership-heading">
+    <div class="band__inner">
+      <div class="grid rise">
+        <span class="kicker grid__kicker">Leadership</span>
+
+        <div class="grid__main">
+          <h2 id="leadership-heading" class="display">Who We Are</h2>
+          <p class="prose">
+            Every member of the team brings a distinct perspective and expertise across
+            development, construction, institutional investing, and technology. Together, we
+            share a commitment to building exceptional properties that stand the test of
+            time.
+          </p>
+          <a class="action-link" href="/team">
+            Meet the team <span class="action-link__arrow">→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Press ============================================ -->
+  <section class="band band--paper" aria-labelledby="press-heading">
+    <div class="band__inner">
+      <div class="section-header rise">
+        <div class="section-header__text">
+          <span class="kicker">In the News</span>
+          <h2 id="press-heading" class="display">Press</h2>
+        </div>
+        <a class="action-link section-header__action" href="/press">
+          All coverage <span class="action-link__arrow">→</span>
+        </a>
+      </div>
+
+      <div class="rise press-list">
+        {recentPress.map((article) => (
+          <a
+            class="list__row"
+            href={article.url || '/press'}
+            target={article.url ? '_blank' : undefined}
+            rel={article.url ? 'noopener' : undefined}
+          >
+            <span class="list__source">
+              <span class="list__date">{formatDate(article.date)}</span>
+              <span class="list__outlet">{article.outlet}</span>
+            </span>
+            <span class="list__title">{article.title}</span>
+            <span class="list__arrow">→</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Close ============================================ -->
+  <section class="band band--dark close" aria-labelledby="close-heading">
+    <div class="band__inner close__grid">
+      <div class="close__lede rise">
+        <span class="kicker">Investor Relations</span>
+        <h2 id="close-heading" class="display">Let's build what's next</h2>
+        <p class="prose">
+          We work with a small group of investors who want to understand what they own.
+          The current information package covers strategy, active projects, and the
+          reporting cadence you can expect.
+        </p>
+      </div>
+
+      <!-- An inset well, not a bordered card: the ground change carries the edge. -->
+      <div class="close__panel rise">
+        <span class="kicker">Stay connected</span>
+        <p class="prose">
+          Receive updates on acquisitions, project milestones, and market insight directly
+          from Newstreet.
+        </p>
+        <!-- Straight to the form. The deeper pages route through the investors
+             request band because there the offer still needs explaining; here
+             the reader has just read the whole page and the CTA names the
+             action, so a stop at another page's band to press a second button
+             is a step that only loses people. -->
+        <a class="action close__action" href="/contact?about=investors">
+          Request information <span class="action__arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* ---- Snapshot: figures beneath the introduction ---------- */
+  .ledger__row {
+    margin-top: var(--s-xl);
+  }
+
+  /* ---- Columns held apart by space, never by vertical rules */
+  /* .columns is a shared object and lives in base.css. `.phases` is too, and
+     is now the investors page's alone — this page renders the same module as
+     the list below instead. */
+
+  /* ---- Lifecycle stages -------------------------------------
+     Six names beside the figure, in the text column. Rows are
+     separated by hairlines, which is permitted position three —
+     the same device the press index and the disclosure rows use —
+     and the set is closed top and bottom so it reads as one block
+     rather than trailing off into the link beneath it.
+
+     Deliberately NOT a `.disclose`: these rows have nothing to
+     open. The investors page holds the bodies, and a control that
+     expands to nothing is worse than no control. */
+  .stages {
+    margin-top: var(--s-xl);
+    list-style: none;
+    border-top: 1px solid var(--rule);
+  }
+  .stages__item {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-md);
+    padding: var(--s-sm) 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  /* Same numeral as the phase grid it replaces — display face, tabular, faint,
+     so the six read as a column of figures and the names stay the content. */
+  .stages__num {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-faint);
+  }
+  .stages__name {
+    font-size: var(--size-body);
+  }
+
+  /* Featured projects use the shared .projects grid and ProjectCard. */
+
+  /* NO MARGIN: THE HEADER'S RULE IS THIS LIST'S TOP EDGE, and the first row's
+     own padding is the space beneath it — the same reasoning the partner rail
+     runs on. With `s-lg` here as well, the two stacked: 32px of margin and then
+     20px of row padding put the first headline 55px under the rule, which on
+     the featured-projects grid above is fine because an image fills it, and
+     here is just a gap. Removing the margin lands it at 23px, matching how the
+     disclosure lists sit under a rule elsewhere on the site. */
+  .press-list {
+    margin-top: 0;
+  }
+
+  /* ---- Close: lede left, action well right ---------------- */
+  /* `.intro__img` and `.leadership__img` were here. Both sections are splits
+     now and carry no photograph, so the crop and the sizing they held have
+     nothing left to apply to. */
+
+  .close {
+    background: var(--dark-band);
+  }
+  .close__grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--s-lg);
+    align-items: start;
+  }
+  .close__lede {
+    grid-column: 1 / 7;
+  }
+  .close__lede .display {
+    margin-top: var(--s-md);
+  }
+  .close__lede .prose {
+    margin-top: var(--s-md);
+  }
+  .close__panel {
+    grid-column: 8 / 13;
+    background: var(--dark);
+    padding: var(--s-xl);
+  }
+  .close__panel .prose {
+    margin-top: var(--s-md);
+  }
+  .close__action {
+    margin-top: var(--s-xl);
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* ---- Responsive ------------------------------------------ */
+  @media (max-width: 900px) {
+    .section-head {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--s-md);
+    }
+    .close__lede,
+    .close__panel {
+      grid-column: 1 / 13;
+    }
+    .close__panel {
+      margin-top: var(--s-lg);
+      padding: var(--s-lg);
+    }
+  }
+
+</style>

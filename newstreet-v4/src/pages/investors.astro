@@ -1,0 +1,352 @@
+---
+/**
+ * DIRECTION CONTRACT — Investor Relations
+ *
+ * THESIS: The page the whole site funnels toward. Its job is not to persuade but
+ * to disclose — how capital is deployed, what governs the decisions, what an
+ * investor receives afterwards, and how to ask for the package. Process is the
+ * proof, so the method sections carry the page and the ask sits at the end.
+ * STORY: An LP arrives from a project page or the home Close, reads the method
+ * end to end, sees what reporting they would actually receive, has the four
+ * obvious questions answered, and requests information.
+ * FORM: No hero image. This is a document, not a pitch; it opens on the Split
+ * introduction the portfolio index opens on, and every band below is a section
+ * header over a shared object — .phases, .columns, the group list, the FAQ.
+ *
+ * Built from the client's wireframes with two deliberate departures, confirmed
+ * before building: the wireframe's vertical column rules and bordered boxes are
+ * dropped, because this system holds columns apart by space and lets a ground
+ * change carry an edge. The principles also lose their 01–03 marks — a number
+ * means order here, and the principles have none.
+ */
+import Base from '../layouts/Base.astro';
+import Photo from '../components/Photo.astro';
+import { lifecycle, principles } from '../lib/firm.js';
+
+/**
+ * What an investor receives, grouped as the wireframe groups it. Labels are
+ * the group; the items are the deliverables inside it.
+ */
+const reporting = [
+  {
+    label: 'Quarterly performance',
+    items: ['Property performance', 'Occupancy and leasing activity', 'Portfolio updates'],
+  },
+  {
+    label: 'Development updates',
+    items: ['Construction updates', 'Project milestones', 'Timeline reporting'],
+  },
+  {
+    label: 'Market intelligence',
+    items: ['Economic trends', 'Market commentary', 'Acquisition updates'],
+  },
+];
+
+/**
+ * DRAFT ANSWERS — these need the firm's sign-off before launch.
+ *
+ * The wireframe supplies the four questions and no answers. Every answer below
+ * is assembled only from commitments the site or PRODUCT.md already makes:
+ * accredited individuals and institutions, the quarterly cadence named in the
+ * reporting section above, and the lifecycle's own words on hold period. No
+ * hold-period range, no return figure, no minimum check size, and no AUM is
+ * stated here, because none of those is confirmed anywhere and this page is
+ * the last place to invent one.
+ */
+const faqs = [
+  {
+    q: 'Who typically invests with Newstreet?',
+    a: 'Accredited individuals and institutions. We work with a small group of investors who want to understand what they own, which is why the process above is published rather than summarized.',
+  },
+  {
+    q: 'How often will I receive updates?',
+    a: 'Performance reporting is quarterly. Development and construction milestones are reported as they occur rather than held to the quarter, and variances to underwriting are raised when we see them.',
+  },
+  {
+    q: 'How long are investments typically held?',
+    a: 'It depends on the asset and the market rather than on a fund clock. We underwrite to hold and structure to sell, so a refinance or disposition is timed to the business plan the capitalization was built around.',
+  },
+  {
+    q: 'How do I learn about new opportunities?',
+    a: 'Request the current information package below. It covers strategy, active projects, and the reporting cadence you can expect, and it is how new acquisitions and offerings are circulated.',
+  },
+];
+---
+
+<Base
+  title="Investor Relations | Newstreet"
+  description="How Newstreet sources, underwrites, capitalizes, and realizes multifamily investments — the principles that govern each decision, the reporting investors receive, and how to request the current information package."
+  transparentNav={true}
+>
+  <!-- ===== Hero =============================================
+       Half height, not full: the home page and a project page
+       open on their subject, and this page's subject is the
+       process below rather than the building. Half states the
+       firm and hands the reader straight to the method. -->
+  <section class="hero hero--half" aria-labelledby="investors-heading">
+    <Photo
+      class="hero__img"
+      src="Media/Chicago Astor Street Historic District.jpg"
+      alt="Greystone and limestone rowhouses on Astor Street, Gold Coast, Chicago"
+      sizes="100vw"
+      loading="eager"
+      fetchpriority="high"
+      position="center 42%"
+    />
+
+    <div class="hero__caption">
+      <span class="kicker hero__kicker">Investor Relations</span>
+      <h1 id="investors-heading" class="display display--lg hero__title">
+        Built for long-term partnerships
+      </h1>
+    </div>
+  </section>
+
+  <!-- ===== Principles =======================================
+       First: what governs a decision, before the process that
+       carries it out. The lifecycle reads as a set of steps until
+       you know what each step is being judged against. -->
+  <section class="band band--paper band--flush-top" aria-labelledby="principles-heading">
+    <div class="band__inner">
+      <div class="section-header rise">
+        <div class="section-header__text">
+          <span class="kicker">Our Investment Principles</span>
+          <h2 id="principles-heading" class="display">Principles that guide every decision</h2>
+          <p class="prose">
+            These are the standards every opportunity is measured against, and they hold at
+            every stage of the process below. They are what keep the portfolio consistent
+            as it grows.
+          </p>
+        </div>
+      </div>
+
+      <div class="columns columns--3 rise">
+        {principles.map((item) => (
+          <div>
+            <h3 class="display display--sm">{item.title}</h3>
+            <p class="prose">{item.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Investment lifecycle =============================
+       id is a link target: the home page's lifecycle section and
+       the nav's Investment Strategy entry both point here. -->
+  <section class="band band--dark" id="lifecycle" aria-labelledby="lifecycle-heading">
+    <div class="band__inner">
+      <div class="section-header rise">
+        <div class="section-header__text">
+          <span class="kicker">Investment Lifecycle</span>
+          <h2 id="lifecycle-heading" class="display">A typical investment lifecycle</h2>
+          <p class="prose">
+            From sourcing an opportunity to realizing its value, a real estate investment
+            moves through a series of distinct phases. While each investment is different,
+            the lifecycle below provides a general framework for how opportunities are
+            evaluated, executed, and managed through ownership.
+          </p>
+        </div>
+      </div>
+
+      <ol class="phases rise">
+        {lifecycle.map((step, i) => (
+          <li>
+            <span class="phases__num">{String(i + 1).padStart(2, '0')}</span>
+            <h3 class="display display--sm">{step.phase}</h3>
+            <p class="prose">{step.body}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- ===== Reporting ========================================
+       Paired: the asset on the left, what you are told about it
+       on the right. This is the system's one image-beside-text
+       layout, so it cannot drift from the home page's version.
+       The groups sit under the prose, in the text column. -->
+  <section class="band band--paper" aria-labelledby="reporting-heading">
+    <div class="band__inner paired paired--portrait">
+      <figure class="paired__figure rise">
+        <Photo
+          src="Media/pexels-harrisrigorad-25261411.jpg"
+          alt="The Jewelers Building and Marina City from the Chicago River, Chicago"
+          sizes="(max-width: 900px) 100vw, 45vw"
+        />
+      </figure>
+
+      <div class="paired__text rise">
+        <span class="kicker">Reporting &amp; Communication</span>
+        <h2 id="reporting-heading" class="display">
+          Institutional reporting. Personal relationships
+        </h2>
+        <p class="prose">
+          Newstreet provides regular monthly and quarterly reporting across the investment
+          lifecycle. Depending on the stage of a project, reports cover underwriting
+          projections, pre-development activity, construction progress, and other material
+          updates. Investors have consistent visibility into performance and progress.
+        </p>
+
+        <!-- The same disclosure object as the FAQ below, at label scale. The
+             first is open so the section shows what a row contains rather than
+             asking the reader to guess. -->
+        <div class="disclose disclose--rows groups">
+          {reporting.map((group, i) => (
+            <details class="disclose__row" open={i === 0}>
+              <summary class="disclose__head">
+                <span>{group.label}</span>
+                <span class="disclose__mark" aria-hidden="true"></span>
+              </summary>
+              <ul class="groups__list disclose__body">
+                {group.items.map((item) => (
+                  <li class="groups__item">{item}</li>
+                ))}
+              </ul>
+            </details>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FAQ =============================================
+       Native details/summary: it opens with no JavaScript, is
+       keyboard operable for free, and prints open. -->
+  <section class="band band--tint" aria-labelledby="faq-heading">
+    <div class="band__inner">
+      <div class="grid">
+        <span class="kicker grid__kicker">Frequently Asked Questions</span>
+
+        <div class="grid__main">
+          <h2 id="faq-heading" class="display">Common investor questions</h2>
+
+          <div class="disclose disclose--rows faq rise">
+            {faqs.map((item) => (
+              <details class="disclose__row">
+                <summary class="disclose__head">
+                  <span>{item.q}</span>
+                  <span class="disclose__mark" aria-hidden="true"></span>
+                </summary>
+                <p class="prose disclose__body">{item.a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Close ============================================
+       THE SHARED CONTACT CLOSE, matching About the Firm and Team.
+       This was the request-the-package block — kicker "Request
+       Information", "Ask for the current package" — and `id="request"`
+       is KEPT, because the footer's "Request Information" link and
+       every project page's action point at it. Those two links now
+       land on a general contact band rather than on the offer they
+       name; see the note in chat. The action still carries the
+       `?about=investors` route so the form arrives pre-set to the
+       investor enquiry, which is what those readers came for. -->
+  <section class="band band--dark close" id="request" aria-labelledby="request-heading">
+    <div class="band__inner close__grid">
+      <div class="close__lede rise">
+        <span class="kicker">Contact</span>
+        <h2 id="request-heading" class="display">Let's start a conversation</h2>
+        <p class="prose">
+          Whether you are evaluating an investment, have a site to discuss, or are exploring
+          a development partnership, we would like to hear from you.
+        </p>
+      </div>
+
+      <!-- An inset well, not a bordered card: the ground change carries the edge. -->
+      <div class="close__panel rise">
+        <span class="kicker">Get in Touch</span>
+        <p class="prose">
+          Contact the Newstreet team to start the conversation.
+        </p>
+        <a class="action close__action" href="/contact?about=investors">
+          Contact us <span class="action__arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* The half-height hero is a shared object in base.css. */
+
+  /* ---- Reporting groups -------------------------------------
+     The shared .disclose object at label scale; only the spacing
+     off the prose and the bullet list belong to this page. */
+  .groups {
+    margin-top: var(--s-xl);
+  }
+  .groups__list {
+    list-style: none;
+  }
+  /* The square is the stage indicator's mark at list scale — the site has one
+     bullet shape and this is it. */
+  .groups__item {
+    position: relative;
+    padding-left: var(--s-md);
+    line-height: 1.5;
+  }
+  .groups__item + .groups__item {
+    margin-top: var(--s-sm);
+  }
+  .groups__item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.62em;
+    width: 4px;
+    height: 4px;
+    background: var(--ink-faint);
+  }
+
+  /* ---- FAQ --------------------------------------------------
+     The shared .disclose object at question scale; only its
+     spacing off the heading belongs to this page. */
+  .faq {
+    margin-top: var(--s-xl);
+  }
+
+  /* ---- Close ------------------------------------------------
+     The same object as the home page's Close. */
+  .close__grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--s-lg);
+    align-items: start;
+  }
+  .close__lede {
+    grid-column: 1 / 7;
+  }
+  .close__lede .display,
+  .close__lede .prose {
+    margin-top: var(--s-md);
+  }
+  .close__panel {
+    grid-column: 8 / 13;
+    padding: var(--s-xl);
+    background: var(--dark-band);
+  }
+  .close__panel .prose {
+    margin-top: var(--s-sm);
+  }
+  .close__action {
+    margin-top: var(--s-lg);
+  }
+
+  @media (max-width: 900px) {
+    .close__lede,
+    .close__panel {
+      grid-column: 1 / 13;
+    }
+    .close__panel {
+      margin-top: var(--s-lg);
+      padding: var(--s-lg);
+    }
+  }
+
+</style>

@@ -1,0 +1,206 @@
+---
+/**
+ * The map that ships in the HTML: an SVG of the lake, the river, and the assets,
+ * drawn in the same ink as the rest of the page.
+ *
+ * This is what the server renders and what a visitor sees before — or instead
+ * of — the tile map. Leaflet replaces it once it loads. It is not a stub: with
+ * JavaScript off, tiles blocked, or the tile host down, this is the map, so it
+ * has to stand on its own.
+ *
+ * The marker is the stage indicator: the same square on the same value ramp the
+ * cards and the filter use, so a reader who has learned the ramp reads the map
+ * without needing a second legend.
+ */
+import { EXTENT, locate, stageLabel } from '../lib/geo.js';
+
+const { projects } = Astro.props;
+const { plotted } = locate(projects);
+
+/* Equirectangular, which at one city's scale is indistinguishable from anything
+   more correct. Longitude is foreshortened by the latitude of the extent. */
+const K = Math.cos((41.9 * Math.PI) / 180);
+const SCALE = 10000;
+const W = Math.round((EXTENT.east - EXTENT.west) * K * SCALE);
+const H = Math.round((EXTENT.north - EXTENT.south) * SCALE);
+
+const x = (lng) => +((lng - EXTENT.west) * K * SCALE).toFixed(1);
+const y = (lat) => +((EXTENT.north - lat) * SCALE).toFixed(1);
+
+/* Marker geometry in viewBox units, sized against the width the panel is
+   actually drawn at — about a 5px square and a 20px hit area. */
+const MARK = 11;
+const HIT = 46;
+const LABEL_GAP = 24;
+
+const marks = plotted
+  .map((entry) => ({ ...entry, cx: x(entry.geo.lng), cy: y(entry.geo.lat) }))
+  .sort((a, b) => a.cy - b.cy);
+
+/* The lakefront and the river's two branches, held as real coordinates and
+   projected like everything else — so changing EXTENT reframes the map instead
+   of invalidating a hand-traced path. Schematic: it locates the assets against
+   the city, it is not survey geometry. */
+const path = (points) =>
+  points.map(([lat, lng], i) => `${i ? 'L' : 'M'} ${x(lng)} ${y(lat)}`).join(' ');
+
+const SHORE_POINTS = [
+  [41.945, -87.639],
+  [41.931, -87.635],
+  [41.921, -87.631],
+  [41.911, -87.626],
+  [41.902, -87.622],
+  [41.897, -87.617],
+  /* Streeterville pushes east here; at full extent it reads as a drawing error
+     rather than as a shoreline, so the bulge is softened. */
+  [41.892, -87.61],
+  [41.886, -87.612],
+  [41.877, -87.612],
+  [41.867, -87.61],
+  [41.855, -87.605],
+];
+
+/* The shoreline, closed against the eastern edge of the frame to make water. */
+const SHORE = `${path(SHORE_POINTS)} L ${W} ${H} L ${W} 0 Z`;
+
+const WOLF_POINT = [41.8885, -87.6385];
+const RIVER_MAIN = path([WOLF_POINT, [41.8885, -87.6265], [41.8895, -87.62], [41.8905, -87.612]]);
+const RIVER_NORTH = path([
+  WOLF_POINT,
+  [41.895, -87.6455],
+  [41.905, -87.6525],
+  [41.915, -87.66],
+  [41.928, -87.668],
+  [41.945, -87.679],
+]);
+const RIVER_SOUTH = path([
+  WOLF_POINT,
+  [41.883, -87.639],
+  [41.876, -87.639],
+  [41.869, -87.642],
+  [41.86, -87.648],
+  [41.855, -87.651],
+]);
+---
+
+<svg
+    class="map__svg"
+    viewBox={`0 0 ${W} ${H}`}
+    role="group"
+    aria-label={`Map of ${marks.length} Newstreet assets in Chicago`}
+  >
+    <path class="map__water" d={SHORE} />
+    <path class="map__river" d={RIVER_MAIN} />
+    <path class="map__river" d={RIVER_NORTH} />
+    <path class="map__river" d={RIVER_SOUTH} />
+
+    <text class="map__place" x={W - 30} y="250" text-anchor="end">Lake Michigan</text>
+
+    {marks.map(({ project, geo: g, cx, cy }) => {
+      const mark = (
+        <>
+          <rect class="map__hit" x={cx - HIT / 2} y={cy - HIT / 2} width={HIT} height={HIT} />
+          <rect
+            class:list={['map__mark', `map__mark--${project.stage}`]}
+            x={cx - MARK / 2}
+            y={cy - MARK / 2}
+            width={MARK}
+            height={MARK}
+          />
+          <text
+            class="map__label"
+            x={cx - LABEL_GAP}
+            y={cy + 8 + (g.labelDy ?? 0)}
+            text-anchor="end"
+          >
+            {project.name}
+          </text>
+        </>
+      );
+
+      return project.href ? (
+        <a
+          class="map__pin"
+          href={project.href}
+          aria-label={`${project.name}, ${g.address} — ${stageLabel(project.stage)}`}
+        >
+          {mark}
+        </a>
+      ) : (
+        <g class="map__pin">{mark}</g>
+      );
+    })}
+</svg>
+
+<style>
+  /* No panel and no border: the land is the band's own ground, so the only
+     drawn things are the water, the river, and the assets. */
+  .map__svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .map__water {
+    fill: rgba(0, 0, 0, 0.08);
+  }
+  .map__river {
+    fill: none;
+    stroke: rgba(0, 0, 0, 0.2);
+    stroke-width: 6;
+  }
+
+  /* Sized in viewBox units to land on the 10px label size once the panel is
+     scaled down into its column. */
+  .map__place,
+  .map__label {
+    font-family: var(--font-text);
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+  }
+  .map__place {
+    fill: var(--ink-faint);
+  }
+  .map__label {
+    fill: var(--ink-soft);
+    transition: fill 0.3s var(--ease-out);
+  }
+
+  .map__hit {
+    fill: transparent;
+  }
+  /* The marker is the stage indicator, on the same ramp as everywhere else. */
+  .map__mark {
+    fill: var(--stage-pre);
+    transition: transform 0.35s var(--ease-out);
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .map__mark--under-construction {
+    fill: var(--stage-construction);
+  }
+  .map__mark--completed {
+    fill: var(--stage-completed);
+  }
+
+  .map__pin:hover .map__mark,
+  .map__pin:focus-visible .map__mark {
+    transform: scale(1.9);
+  }
+  .map__pin:hover .map__label,
+  .map__pin:focus-visible .map__label {
+    fill: var(--ink);
+  }
+  .map__pin:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .map__mark {
+      transition: none;
+    }
+  }
+</style>

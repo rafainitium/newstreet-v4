@@ -1,0 +1,640 @@
+{
+  "424": {
+    "address": "424 S Wabash Avenue",
+    "city": "Loop, Chicago",
+    "hero": {
+      "src": "424/Renders/IMG_5587 2.JPEG",
+      "alt": "424 S Wabash tower rendering at dusk"
+    },
+    "summaryTitle": [
+      "A Tribute Hotel",
+      "On South Wabash"
+    ],
+    "summary": [
+      "424 S Wabash is a 24-story hotel development at 424 S Wabash Avenue in the Loop, Chicago. The project includes 340 hotel keys operating under Marriott’s Tribute Portfolio, full-service hospitality program, and 203,624 gross square feet.",
+      "The Tribute Portfolio flag lets the hotel keep its own identity rather than a chain template, on a corridor that has gained residential density faster than hospitality to serve it. The tower stands within walking distance of the Loop’s office core, Grant Park, and multiple CTA lines; Newstreet’s role here is as investor rather than developer."
+    ],
+    "team": [
+      {
+        "role": "Architect",
+        "name": "Pappageorge Haymes Partners",
+        "logo": "Companies/PH.png"
+      },
+      {
+        "role": "Lender",
+        "name": "TBD",
+        "logo": null
+      },
+      {
+        "role": "General Contractor",
+        "name": "ENC Construction & Development",
+        "logo": "Companies/ENC.png"
+      }
+    ],
+    "figures": [
+      {
+        "label": "Hotel Keys",
+        "value": "340"
+      },
+      {
+        "label": "Stories",
+        "value": "24"
+      },
+      {
+        "label": "Gross Sq Ft",
+        "value": "203,624"
+      },
+      {
+        "label": "Hotel Brand",
+        "value": "Marriott Tribute Portfolio"
+      }
+    ],
+    "gallery": [
+      {
+        "src": "424/Renders/Frame 2.JPEG",
+        "alt": "424 S Wabash hotel tower rendering with Chicago skyline, Loop"
+      },
+      {
+        "src": "424/Renders/IMG_4961 2 (1).JPEG",
+        "alt": "424 S Wabash hotel tower street view rendering, Loop Chicago"
+      },
+      {
+        "src": "424/Renders/Frame 14 Updated 2.JPEG",
+        "alt": "424 S Wabash from CTA elevated platform, Loop Chicago"
+      },
+      {
+        "src": "424/Renders/Frame 7.JPEG",
+        "alt": "424 S Wabash hotel retail base and entrance, Loop Chicago"
+      },
+      {
+        "src": "424/Renders/Frame 6 Updated 2.JPEG",
+        "alt": "424 S Wabash full tower elevation, Loop Chicago"
+      }
+    ],
+    "website": null
+  },
+  "626": {
+    "address": "626 S Wabash Avenue",
+    "city": "South Loop, Chicago",
+    "hero": {
+      "src": "626/626+Wabash+-+Streetlevel-1920w-Picsart-AiImageEnhancer.webp",
+      "alt": "626 S Wabash exterior"
+    },
+    "summaryTitle": [
+      "Multifamily Living",
+      "In the South Loop"
+    ],
+    "summary": [
+      "626 S Wabash is a 19-story multifamily development at 626 S Wabash Avenue in the South Loop, Chicago. The project includes 368 total units, approximately 20,000 square feet of indoor and outdoor amenity space, and 210,000 gross square feet.",
+      "Twenty thousand square feet of amenity space is the differentiator at this scale, in a submarket where new supply competes on shared space as much as on unit finish. Grant Park, the Museum Campus, and several CTA lines are all within a short walk."
+    ],
+    "team": [
+      {
+        "role": "Architect",
+        "name": "Antunovich Associates",
+        "logo": null
+      },
+      {
+        "role": "Lender",
+        "name": "TBD",
+        "logo": null
+      },
+      {
+        "role": "General Contractor",
+        "name": "Clark Construction",
+        "logo": null
+      }
+    ],
+    "figures": [
+      {
+        "label": "Units",
+        "value": "368"
+      },
+      {
+        "label": "Gross Sq Ft",
+        "value": "210,000"
+      },
+      {
+        "label": "Stories",
+        "value": "19"
+      },
+      {
+        "label": "Amenity Sq Ft",
+        "value": "20,000"
+      }
+    ],
+    "gallery": [
+      {
+        "src": "626/626+Wabash+-+Streetlevel-1920w.webp",
+        "alt": "626 S Wabash street level view, South Loop Chicago multifamily"
+      },
+      {
+        "src": "626/626-S-Wabash-Avenue-04-scaled.jpg",
+        "alt": "626 S Wabash exterior facade, South Loop Chicago"
+      },
+      {
+        "src": "626/626+Wabash+-+Upper+Facade.jpg",
+        "alt": "626 S Wabash upper facade detail, South Loop Chicago"
+      },
+      {
+        "src": "626/626+Wabash+-+Aerial.jpg",
+        "alt": "626 S Wabash aerial view, South Loop Chicago"
+      },
+      {
+        "src": "626/626+Wabash+-+Pool.jpg",
+        "alt": "626 S Wabash rooftop pool deck amenity, South Loop Chicago"
+      },
+      {
+        "src": "626/626+Wabash+-+Level+18+Terrace.jpg",
+        "alt": "626 S Wabash Level 18 terrace with Chicago skyline views"
+      },
+      {
+        "src": "626/626+Wabash+-+Basketball.jpg",
+        "alt": "626 S Wabash basketball court amenity, South Loop Chicago"
+      },
+      {
+        "src": "626/626+Wabash+-+Corner+Unit.jpg",
+        "alt": "626 S Wabash corner unit interior, South Loop Chicago"
+      }
+    ],
+    "website": null
+  },
+  "Arris": {
+    "address": "606 W Wrightwood Ave / 2600 N Clark St",
+    "city": "Lincoln Park, Chicago",
+    "hero": {
+      "src": "Arris/Renders/Hero Render.jpg",
+      "alt": "The Arris exterior rendering"
+    },
+    "summaryTitle": [
+      "Modern Living",
+      "In Lincoln Park"
+    ],
+    "summary": [
+      "The Arris is a five-story mixed-use multifamily development at 606 W Wrightwood Avenue in Lincoln Park, Chicago. The project includes 48 total units, ground-floor retail anchored by Foxtrot Cafe & Market, and select residential amenities.",
+      "The building takes the wedge-shaped corner where Clark meets Wrightwood, a geometry that allows a stepped-back façade with larger terraces above. Of the 48 residences, 38 are market-rate and 10 affordable, with 10 parking spaces below."
+    ],
+    "team": [
+      {
+        "role": "Architect",
+        "name": "Pappageorge Haymes Partners",
+        "logo": "Companies/PH.png"
+      },
+      {
+        "role": "Lender",
+        "name": "Wintrust",
+        "logo": "Companies/Wintrust.png"
+      },
+      {
+        "role": "General Contractor",
+        "name": "ENC Construction & Development",
+        "logo": "Companies/ENC.png"
+      }
+    ],
+    "figures": [
+      {
+        "label": "Units",
+        "value": "48"
+      },
+      {
+        "label": "Gross Sq Ft",
+        "value": "47,518"
+      },
+      {
+        "label": "Stories",
+        "value": "5"
+      },
+      {
+        "label": "Retail Tenant",
+        "value": "Foxtrot Cafe & Market"
+      }
+    ],
+    "gallery": [
+      {
+        "src": "Arris/Renders/Render 1.jpg",
+        "alt": "The Arris street view rendering, Lincoln Park, Chicago"
+      },
+      {
+        "src": "Arris/Renders/render 2.jpg",
+        "alt": "The Arris facade study rendering, East Lincoln Park Chicago"
+      },
+      {
+        "src": "Arris/Renders/render 3.jpg",
+        "alt": "The Arris corner view rendering, Clark and Wrightwood, Lincoln Park Chicago"
+      },
+      {
+        "src": "Arris/Renders/kitchen.jpg",
+        "alt": "The Arris kitchen interior, Lincoln Park Chicago multifamily"
+      },
+      {
+        "src": "Arris/Renders/living.jpg",
+        "alt": "The Arris living room interior, Lincoln Park Chicago"
+      }
+    ],
+    "website": "https://www.thearris.com"
+  },
+  "1165Clark": {
+    "address": "1165 N Clark St",
+    "city": "Gold Coast, Chicago",
+    "hero": {
+      "src": "1165Clark/1165-n-clark-exterior.png",
+      "alt": "1165 N Clark Street seen from the east at sunset — a red brick building over a curved glass ground floor with a CVS pharmacy, its top floor set back behind planted terraces"
+    },
+    "summaryTitle": [
+      "Office to Residential",
+      "In The Gold Coast"
+    ],
+    "summary": [
+      "1165 N Clark is a seven-story mixed-use multifamily development at 1165 N Clark Street in the Gold Coast, Chicago. The project includes 71 total units, commercial space anchored by CVS and Michigan State University Federal Credit Union, and select residential amenities.",
+      "An office-to-residential conversion, where commercial floor plates yield expansive layouts and oversized private terraces that new construction on a Gold Coast parcel could not economically deliver. With the CTA Red Line at the door, the result has little direct competition in the submarket."
+    ],
+    "team": [
+      {
+        "role": "Architect",
+        "name": "TBD",
+        "logo": null
+      },
+      {
+        "role": "Lender",
+        "name": "TBD",
+        "logo": null
+      },
+      {
+        "role": "General Contractor",
+        "name": "TBD",
+        "logo": null
+      }
+    ],
+    "figures": [
+      {
+        "label": "Units",
+        "value": "71"
+      },
+      {
+        "label": "Gross Sq Ft",
+        "value": "92,541"
+      },
+      {
+        "label": "Stories",
+        "value": "7"
+      },
+      {
+        "label": "Tenant Suite",
+        "value": "Michigan State University Federal Credit Union"
+      }
+    ],
+    "gallery": [
+      {
+        "src": "1165Clark/1165Blurred.jpg",
+        "alt": "1165 N Clark Street mixed-use building exterior, Gold Coast, Chicago"
+      },
+      {
+        "src": "1165Clark/1165-n-clark-exterior.png",
+        "alt": "1165 N Clark Street seen from the east at sunset — a red brick building over a curved glass ground floor with a CVS pharmacy, its top floor set back behind planted terraces"
+      }
+    ],
+    "website": null
+  },
+  "200WO": {
+    "address": "320 W Ohio St",
+    "city": "River North, Chicago",
+    "hero": {
+      "src": "200WO/200WO.jpg",
+      "alt": "200 W Ohio exterior rendering"
+    },
+    "summaryTitle": [
+      "Mixed-Use Infill On",
+      "Ohio & Wells"
+    ],
+    "summary": [
+      "200 W Ohio is a five-story mixed-use multifamily development at 320 W Ohio Street in River North, Chicago. The project includes 48 total units, 4,800 square feet of ground-floor retail, and select residential amenities.",
+      "Retail runs the length of the Wells Street frontage, where the foot traffic is and where the storefronts carry the most visibility. Residences sit above, with amenities extending onto a landscaped outdoor terrace."
+    ],
+    "team": [
+      {
+        "role": "Architect",
+        "name": "Pappageorge Haymes Partners",
+        "logo": "Companies/PH.png"
+      },
+      {
+        "role": "Lender",
+        "name": "TBD",
+        "logo": null
+      },
+      {
+        "role": "General Contractor",
+        "name": "ENC Construction & Development",
+        "logo": "Companies/ENC.png"
+      }
+    ],
+    "figures": [
+      {
+        "label": "Units",
+        "value": "48"
+      },
+      {
+        "label": "Gross Sq Ft",
+        "value": "42,604"
+      },
+      {
+        "label": "Stories",
+        "value": "5"
+      },
+      {
+        "label": "Retail SF",
+        "value": "4,800"
+      }
+    ],
+    "gallery": [
+      {
+        "src": "200WO/Renders/200 W Ohio Sketch Renders 2026-05-15.jpeg",
+        "alt": "200 W Ohio mixed-use building rendering, River North, Chicago"
+      },
+      {
+        "src": "200WO/Renders/200 W Ohio Sketch Renders 2 2026-05-15.jpeg",
+        "alt": "200 W Ohio streetscape sketch rendering, River North, Chicago"
+      }
+    ],
+    "website": null
+  },
+  "319Peabody": {
+    "address": "319 Peabody St",
+    "city": "SoBro · Nashville, TN",
+    "hero": {
+      "src": "319Peabody/232865_N15_medium.jpg",
+      "alt": "The landscaped plaza beneath 319 Peabody, its timber soffit carried on branching columns above planting and seating"
+    },
+    "summaryTitle": [
+      "Redefining",
+      "Nashville's Skyline"
+    ],
+    "summary": [
+      "319 Peabody is a 53-story mixed-use tower at 319 Peabody Street in SoBro, Nashville. The project includes 405 hotel keys and 104 luxury condominiums, 400 below-grade parking spaces, and approximately 867,000 gross square feet.",
+      "At 665 feet, the tower rises where SoBro meets Rutledge Hill, stacking hospitality and for-sale residential in a single structure. Parking sits below grade so the street level can carry retail, amenities, and public gathering space, with a rooftop pool and bar above."
+    ],
+    "team": [
+      {
+        "role": "Architect",
+        "name": "Pappageorge Haymes Partners",
+        "logo": "Companies/PH.png"
+      },
+      {
+        "role": "Lender",
+        "name": "TBD",
+        "logo": null
+      },
+      {
+        "role": "General Contractor",
+        "name": "TBD",
+        "logo": null
+      }
+    ],
+    "figures": [
+      {
+        "label": "Hotel Keys",
+        "value": "405"
+      },
+      {
+        "label": "Condo Units",
+        "value": "104"
+      },
+      {
+        "label": "Stories",
+        "value": "53"
+      },
+      {
+        "label": "Gross Sq Ft",
+        "value": "867,502"
+      }
+    ],
+    "gallery": [
+      {
+        "src": "319Peabody/232865_N22_medium.jpg",
+        "alt": "319 Peabody mixed-use tower rendering, SoBro, Nashville"
+      },
+      {
+        "src": "319Peabody/232865_N21_medium.jpg",
+        "alt": "319 Peabody tower exterior rendering, Nashville Tennessee"
+      },
+      {
+        "src": "319Peabody/232865_N14_medium.jpg",
+        "alt": "319 Peabody tower podium level rendering, SoBro Nashville"
+      },
+      {
+        "src": "319Peabody/232865_N15_medium.jpg",
+        "alt": "319 Peabody tower street view rendering, Nashville"
+      },
+      {
+        "src": "319Peabody/232865_N16_medium.jpg",
+        "alt": "319 Peabody tower upper floors rendering, Nashville"
+      },
+      {
+        "src": "319Peabody/232865_N18_medium.jpg",
+        "alt": "319 Peabody tower amenity rendering, SoBro Nashville"
+      },
+      {
+        "src": "319Peabody/232865_N20_medium.jpg",
+        "alt": "319 Peabody tower aerial rendering, downtown Nashville"
+      }
+    ],
+    "website": null
+  },
+  "5thpine": {
+    "address": "5th Street & Pine Street",
+    "city": "Michigan City, IN",
+    "hero": {
+      "src": "5thpine/5NP-Corner-Render.jpg",
+      "alt": "Fifth + Pine corner rendering, Michigan City Indiana mixed-use development"
+    },
+    "summaryTitle": [
+      "500+ Apartments",
+      "In Michigan City"
+    ],
+    "summary": [
+      "Fifth + Pine is an eight-story mixed-use multifamily development at 5th Street and Pine Street in Michigan City, Indiana. The project includes approximately 500 total apartments, 40,000 square feet of retail anchored by a full-service grocery store, and structured parking.",
+      "A $200 million redevelopment reclaiming the former Memorial Hospital site, a full city block vacant long enough to become a gap in the downtown."
+    ],
+    "team": [
+      {
+        "role": "Architect",
+        "name": "Pappageorge Haymes Partners",
+        "logo": "Companies/PH.png"
+      },
+      {
+        "role": "Lender",
+        "name": "TBD",
+        "logo": null
+      },
+      {
+        "role": "General Contractor",
+        "name": "TBD",
+        "logo": null
+      }
+    ],
+    "figures": [
+      {
+        "label": "Units",
+        "value": "500+"
+      },
+      {
+        "label": "Stories",
+        "value": "8"
+      },
+      {
+        "label": "Grocery + Retail SF",
+        "value": "40,000"
+      }
+    ],
+    "gallery": [
+      {
+        "src": "5thpine/5NP-Corner-Render.jpg",
+        "alt": "Fifth + Pine corner rendering, Michigan City Indiana mixed-use development"
+      },
+      {
+        "src": "5thpine/5NP-SE-Aerial-Render.jpg",
+        "alt": "Fifth + Pine aerial rendering, Michigan City Indiana"
+      }
+    ],
+    "website": null
+  },
+  "100NB": {
+    "address": "100 N Broadway",
+    "city": "Aurora, Illinois",
+    "hero": {
+      "src": "100NB/broadway_final(2).webp",
+      "alt": "East Bank Apartments exterior, Aurora, Illinois Chicago metro multifamily development"
+    },
+    "summaryTitle": [
+      "Multifamily Living",
+      "In Downtown Aurora"
+    ],
+    "summary": [
+      "East Bank Apartments is a five-story multifamily development at 100 N Broadway in downtown Aurora, Illinois. The project includes 258 total units, 343,421 gross square feet, and select residential amenities.",
+      "The first ground-up residential development in downtown Aurora in more than two decades. The site sits along the Fox River beside the Aurora Transportation Center and RiverEdge Park, putting residents on the line into Chicago and inside the city’s growing entertainment district."
+    ],
+    "team": [
+      {
+        "role": "Architect",
+        "name": "Pappageorge Haymes Partners",
+        "logo": "Companies/PH.png"
+      },
+      {
+        "role": "Lender",
+        "name": "TBD",
+        "logo": null
+      },
+      {
+        "role": "General Contractor",
+        "name": "ENC Construction & Development",
+        "logo": "Companies/ENC.png"
+      }
+    ],
+    "figures": [
+      {
+        "label": "Units",
+        "value": "258"
+      },
+      {
+        "label": "Gross Sq Ft",
+        "value": "343,421"
+      },
+      {
+        "label": "Stories",
+        "value": "5"
+      }
+    ],
+    "gallery": [
+      {
+        "src": "100NB/broadway_final(2).webp",
+        "alt": "East Bank Apartments exterior, Aurora, Illinois Chicago metro multifamily development"
+      },
+      {
+        "src": "100NB/yeehr(1).webp",
+        "alt": "East Bank Apartments riverside view, Aurora, Illinois"
+      },
+      {
+        "src": "100NB/192702_N5_medium.jpg",
+        "alt": "East Bank Apartments amenity detail, Aurora, Illinois"
+      }
+    ],
+    "website": null
+  },
+  "1810NW": {
+    "address": "1810 N Wells St",
+    "city": "Old Town, Chicago",
+    "hero": {
+      "src": "1810NW/1810-N-Wells-rendering-scaled.jpg",
+      "alt": "1810 North Wells exterior rendering, Old Town, Chicago"
+    },
+    "summaryTitle": [
+      "Adaptive Reuse",
+      "In Old Town"
+    ],
+    "summary": [
+      "1810 North Wells is a four-story mixed-use multifamily development at 1810 N Wells Street in Old Town, Chicago. The project includes 18 total units, 5,100 square feet of street-level retail, 18 parking spaces, and a shared courtyard.",
+      "An adaptive reuse assembled from what was already on the site: two existing buildings, a two-story coach house, and a garage partially demolished to carry a new rooftop addition. Preserving the North Wells street-wall set the terms, answered in contemporary brick and metal rather than imitation."
+    ],
+    "team": [
+      {
+        "role": "Architect",
+        "name": "Pappageorge Haymes Partners",
+        "logo": "Companies/PH.png"
+      },
+      {
+        "role": "Lender",
+        "name": "TBD",
+        "logo": null
+      },
+      {
+        "role": "General Contractor",
+        "name": "TBD",
+        "logo": null
+      }
+    ],
+    "figures": [
+      {
+        "label": "Units",
+        "value": "18"
+      },
+      {
+        "label": "Gross Sq Ft",
+        "value": "39,762"
+      },
+      {
+        "label": "Stories",
+        "value": "4"
+      },
+      {
+        "label": "Parking Spaces",
+        "value": "18"
+      },
+      {
+        "label": "Retail SF",
+        "value": "5,100"
+      }
+    ],
+    "gallery": [
+      {
+        "src": "1810NW/1810-N-Wells-rendering-scaled.jpg",
+        "alt": "1810 North Wells exterior rendering, Old Town, Chicago"
+      },
+      {
+        "src": "1810NW/1.webp",
+        "alt": "1810 North Wells residential building view, Old Town Triangle, Chicago"
+      },
+      {
+        "src": "1810NW/2.jpg",
+        "alt": "1810 North Wells building detail, Old Town, Chicago"
+      },
+      {
+        "src": "1810NW/3.jpg",
+        "alt": "1810 North Wells streetscape, Old Town, Chicago"
+      },
+      {
+        "src": "1810NW/4.jpg",
+        "alt": "1810 North Wells mixed-use development, Old Town, Chicago"
+      }
+    ],
+    "website": null
+  }
+}

@@ -1,0 +1,105 @@
+---
+import '../styles/tokens.css';
+import '../styles/base.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+
+const {
+  title,
+  description,
+  transparentNav = false,
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="Newstreet" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/favicon-192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Libre+Franklin:wght@300;400;500;600&display=swap"
+    />
+
+    <style is:global>
+      /* Nohemi — wordmark only. Two weights; the wordmark uses no others. */
+      @font-face {
+        font-family: 'Nohemi';
+        src:
+          url('/fonts/Nohemi-ExtraLight.woff2') format('woff2'),
+          url('/fonts/Nohemi-ExtraLight.woff') format('woff');
+        font-weight: 200;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'Nohemi';
+        src:
+          url('/fonts/Nohemi-Medium.woff2') format('woff2'),
+          url('/fonts/Nohemi-Medium.woff') format('woff');
+        font-weight: 500;
+        font-style: normal;
+        font-display: swap;
+      }
+    </style>
+  </head>
+
+  <body>
+    <Nav transparent={transparentNav} />
+    <main class:list={[!transparentNav && 'main--solid-nav']}>
+      <slot />
+    </main>
+    <Footer />
+
+    <script>
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // THE HERO ROTATION IS GONE, ON PURPOSE. A shared cross-fade ran here for
+      // any hero carrying [data-hero-slide] frames. The home hero moved to film
+      // and the portfolio hero to a still, which left a setInterval and a
+      // querySelectorAll shipping to all seven routes to drive nothing. The
+      // matching `.hero__stage`/`.hero__slide` rules came out of base.css in the
+      // same pass; bring both back together or neither.
+
+      // One authored entrance, shared by every band. Content is visible by default
+      // when motion is reduced or JS never runs.
+      const targets = document.querySelectorAll('.rise');
+      if (targets.length && !reducedMotion) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('is-in');
+                observer.unobserve(entry.target);
+              }
+            }
+          },
+          { rootMargin: '0px 0px -12% 0px' },
+        );
+        targets.forEach((el) => observer.observe(el));
+      } else {
+        targets.forEach((el) => el.classList.add('is-in'));
+      }
+    </script>
+  </body>
+</html>

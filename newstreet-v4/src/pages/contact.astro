@@ -1,0 +1,339 @@
+---
+/**
+ * DIRECTION CONTRACT — Contact
+ *
+ * THESIS: The one page where the site stops explaining and asks. It carries
+ * V3's inquiry routing — investor, development, media, general — because a
+ * firm serving four audiences with one inbox should at least say which is
+ * which, and the routing is what makes the reply feel addressed.
+ * STORY: A reader arrives from the nav or a Close, picks what they are writing
+ * about, sends four fields, and gets a stated response time.
+ * FORM: Half-height hero, then the form beside the firm's own details, then
+ * nothing. No Close band — the page IS the close, and a second action here
+ * would compete with the one that matters.
+ *
+ * FORMS ARE NEW TO THIS SYSTEM and the objects live in base.css, not here. The
+ * palette has no error hue by brand commitment, so error states are carried by
+ * weight, rule, and position — never by color, because there is none to use.
+ */
+import Base from '../layouts/Base.astro';
+import Photo from '../components/Photo.astro';
+
+/**
+ * V3's four routes, kept. `value` is submitted verbatim so the notification
+ * subject says which inbox it belongs in.
+ *
+ * `slug` is how the REST OF THE SITE ARRIVES HERE ALREADY ROUTED. Every "write
+ * to us" elsewhere used to be its own mailto — a press enquiry, an investor
+ * request — which meant the routing this form already does was being done four
+ * separate times in four separate ways, none of them reaching the form. Those
+ * now link to /contact?about=<slug> instead, so the reader lands on the right
+ * route without picking it twice.
+ */
+const inquiryTypes = [
+  { value: 'Investor Relations', slug: 'investors' },
+  { value: 'Development Opportunities', slug: 'development' },
+  { value: 'Media', slug: 'media' },
+  { value: 'General Inquiries', slug: 'general' },
+];
+---
+
+<Base
+  title="Contact | Newstreet"
+  description="Contact Newstreet — investor relations, development opportunities, media enquiries, and general questions. Chicago, Illinois."
+  transparentNav={true}
+>
+  <!-- ===== Hero =============================================
+       PLACEHOLDER image until the client supplies one.
+
+       This ran the Astor Street rowhouses, the same frame the
+       investors hero opens on. Two pages of a five-hero site
+       opening on one photograph reads as a page that has not been
+       finished, and the reader who moves between them sees it.
+       That image stays on /investors; this one is its own.
+
+       CHOSEN FOR THE SUBJECT, not for the view: a glass multifamily
+       tower standing directly behind a row of Victorian brick and
+       greystone houses is the firm's business in one frame — new
+       density against the fabric already there. It also keeps the
+       Gold Coast register of the frame it replaces.
+
+       A tall portrait source (5152×7728) in a half-height band, so
+       the crop is most of the decision. 55% is where the tower's
+       lower flank still holds the left and the gables and bay
+       windows have come up on the right; higher is all sky and
+       curtain wall, lower loses the tower entirely. -->
+  <section class="hero hero--half" aria-labelledby="contact-heading">
+    <Photo
+      class="hero__img"
+      src="Media/pexels-kelly-28775005.jpg"
+      alt="A glass residential tower rising directly behind a terrace of Victorian brick and greystone houses with steep gables and bay windows, under a flat pale sky"
+      sizes="100vw"
+      loading="eager"
+      fetchpriority="high"
+      position="center 55%"
+    />
+
+    <div class="hero__caption">
+      <span class="kicker hero__kicker">Contact</span>
+      <h1 id="contact-heading" class="display display--lg hero__title">Get in touch</h1>
+    </div>
+  </section>
+
+  <!-- ===== Form =============================================
+       The form on the page grid's main column, the firm's own
+       details in the open left column — the Split layout, with
+       the left column carrying facts instead of staying open. -->
+  <section class="band band--paper band--flush-top" aria-labelledby="write-heading">
+    <div class="band__inner grid contact">
+      <div class="grid__kicker contact__aside">
+        <span class="kicker">Newstreet</span>
+
+        <address class="contact__address">
+          33 W Monroe St, Suite 2100<br />
+          Chicago, IL 60603
+        </address>
+
+        <a class="action-link contact__email" href="mailto:info@newst.com">
+          info@newst.com <span class="action-link__arrow">→</span>
+        </a>
+
+        <p class="meta contact__note">
+          We answer every enquiry ourselves — there is no queue and no auto-responder.
+          Expect a reply within two business days.
+        </p>
+      </div>
+
+      <div class="grid__main">
+        <h2 id="write-heading" class="display">Tell us what you are working on</h2>
+
+        <form class="form" id="contactForm" method="post" action="/api/contact" novalidate>
+          <fieldset class="form__routing">
+            <legend class="field__label">What is this about?</legend>
+
+            <div class="choices">
+              {inquiryTypes.map((type, i) => (
+                <label class="choices__option">
+                  <input
+                    class="choices__input u-visually-hidden"
+                    type="radio"
+                    name="inquiryType"
+                    value={type.value}
+                    data-slug={type.slug}
+                    checked={i === 0}
+                  />
+                  <span class="choices__label">{type.value}</span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+
+          <div class="field">
+            <label class="field__label" for="fullName">Full name</label>
+            <input
+              class="field__control"
+              type="text"
+              id="fullName"
+              name="fullName"
+              autocomplete="name"
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="organization">Organization (optional)</label>
+            <input
+              class="field__control"
+              type="text"
+              id="organization"
+              name="organization"
+              autocomplete="organization"
+            />
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="email">Email</label>
+            <input
+              class="field__control"
+              type="email"
+              id="email"
+              name="email"
+              autocomplete="email"
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="message">Message</label>
+            <textarea class="field__control" id="message" name="message" required></textarea>
+          </div>
+
+          <button class="action form__submit" type="submit">
+            Send enquiry <span class="action__arrow">→</span>
+          </button>
+
+          <!-- Assertive rather than polite: this replaces the reader's last
+               action and they need it now, not after the current utterance. -->
+          <p class="form__status" id="formStatus" role="status" aria-live="assertive" hidden></p>
+        </form>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* The half-height hero is a shared object in base.css. */
+
+  /* ---- Aside ------------------------------------------------
+     The open left column, carrying the firm's own details. */
+  .contact__address {
+    margin-top: var(--s-md);
+    font-style: normal;
+    font-size: var(--size-body-sm);
+    line-height: 1.7;
+    color: var(--ink-soft);
+  }
+  .contact__email {
+    margin-top: var(--s-md);
+  }
+  .contact__note {
+    margin-top: var(--s-lg);
+    max-width: 34ch;
+  }
+
+  /* ---- Form -------------------------------------------------
+     The objects are in base.css; only the rhythm is this page's. */
+  .form {
+    margin-top: var(--s-xl);
+    max-width: 46rem;
+  }
+  .form__routing {
+    border: 0;
+    margin-bottom: var(--s-xl);
+  }
+  .form__submit {
+    margin-top: var(--s-xl);
+  }
+
+  /* The status line sits under the action it answers, at body scale so it is
+     read rather than glanced at. Weight carries it, not color. */
+  .form__status {
+    margin-top: var(--s-md);
+    font-size: var(--size-body-sm);
+    font-weight: 500;
+    max-width: 46ch;
+  }
+  .form__status[data-state='error'] {
+    padding-left: var(--s-sm);
+    border-left: 2px solid var(--ink);
+  }
+
+  @media (max-width: 900px) {
+    .contact__aside {
+      margin-bottom: var(--s-xl);
+    }
+  }
+</style>
+
+<script>
+  /* Progressive enhancement: the form posts natively without this. The script
+     validates in place, keeps the reader on the page, and reports the outcome
+     in words — there is no error colour in this palette to report it with. */
+  const form = document.getElementById('contactForm');
+  const status = document.getElementById('formStatus');
+
+  /* ARRIVING PRE-ROUTED. A reader who clicked "press enquiry" has already said
+     what this is about, and asking again is asking twice. The page is
+     prerendered, so the route is read here at runtime rather than at build.
+     Without JS the form keeps its checked default — Investor Relations, the
+     primary audience — so nothing is lost, only pre-filled. An unknown or
+     absent slug falls through to that same default. */
+  const route = new URLSearchParams(location.search).get('about');
+  if (form && route) {
+    form.querySelector(`.choices__input[data-slug="${CSS.escape(route)}"]`)?.click();
+  }
+
+  if (form && status) {
+    const submit = form.querySelector('button[type="submit"]');
+
+    const setError = (field, message) => {
+      field.setAttribute('aria-invalid', 'true');
+      let note = field.parentElement.querySelector('.field__note');
+      if (!note) {
+        note = document.createElement('p');
+        note.className = 'field__note';
+        field.parentElement.appendChild(note);
+      }
+      note.textContent = message;
+      field.setAttribute('aria-describedby', (note.id ||= `${field.id}-note`));
+    };
+
+    const clearError = (field) => {
+      field.removeAttribute('aria-invalid');
+      field.parentElement.querySelector('.field__note')?.remove();
+    };
+
+    /* Checked on submit, then re-checked on input once a field has already
+       failed — nagging a reader mid-typing is worse than saying nothing. */
+    const problem = (field) => {
+      if (field.hasAttribute('required') && !field.value.trim()) return 'This one is required.';
+      if (field.type === 'email' && !field.checkValidity()) {
+        return 'That address does not look right.';
+      }
+      return null;
+    };
+
+    const fields = [...form.querySelectorAll('.field__control')];
+
+    fields.forEach((field) => {
+      field.addEventListener('input', () => {
+        if (field.getAttribute('aria-invalid') === 'true' && !problem(field)) clearError(field);
+      });
+    });
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      let firstBad = null;
+      fields.forEach((field) => {
+        const message = problem(field);
+        if (message) {
+          setError(field, message);
+          firstBad ||= field;
+        } else {
+          clearError(field);
+        }
+      });
+
+      if (firstBad) {
+        status.hidden = true;
+        firstBad.focus();
+        return;
+      }
+
+      submit.disabled = true;
+      status.hidden = false;
+      status.dataset.state = 'pending';
+      status.textContent = 'Sending…';
+
+      try {
+        const response = await fetch(form.action, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(Object.fromEntries(new FormData(form))),
+        });
+        if (!response.ok) throw new Error(String(response.status));
+
+        form.reset();
+        status.dataset.state = 'sent';
+        status.textContent = 'Thank you — that reached us. We reply within two business days.';
+      } catch {
+        status.dataset.state = 'error';
+        status.textContent =
+          'That did not send. Please write to info@newst.com directly and we will pick it up there.';
+      } finally {
+        submit.disabled = false;
+      }
+    });
+  }
+</script>

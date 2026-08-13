@@ -1,0 +1,406 @@
+---
+/**
+ * Project page — one template, every project.
+ *
+ * V3's page is the reference and its sequence is kept: hero, summary, the facts,
+ * the gallery. What changed is what was taken out. V3 opened at 100vh with a
+ * scroll cue, counted its figures up on entry, and set the project team as a row
+ * of vendor logos; none of those survive a system whose figures are facts rather
+ * than a reveal and whose palette is monochrome.
+ *
+ * Every field is extracted from the V3 page by scripts/extract-project-pages.mjs.
+ * Nothing on this route is hand-typed per project, which is what makes it a
+ * template rather than nine pages that will drift.
+ */
+import Base from '../../layouts/Base.astro';
+import Gallery from '../../components/Gallery.astro';
+import Photo from '../../components/Photo.astro';
+import portfolio from '../../data/projects.json';
+import detail from '../../data/project-detail.json';
+import { stageLabel, isNumeric } from '../../lib/project.js';
+
+export function getStaticPaths() {
+  const { projects } = portfolio;
+
+  /* A project earns a page when it has one. The Coming Soon placeholders carry
+     no href and no detail record, and are skipped rather than rendered empty. */
+  return projects
+    .filter((project) => project.href && detail[project.slug])
+    .map((project) => ({
+      params: { slug: project.href.split('/').pop() },
+      props: { project, page: detail[project.slug] },
+    }));
+}
+
+const { project, page } = Astro.props;
+
+/* The team and the figures are two different kinds of fact and stay two
+   different blocks. Folding the text rows ("Retail Tenant", "Hotel Brand") in
+   with the team dissolved both — the team stopped being a group you could pick
+   out. Those rows are project facts, so they belong with the figures. */
+const numeric = page.figures.filter((f) => isNumeric(f.value));
+const named = page.figures.filter((f) => !isNumeric(f.value));
+const summary = [...numeric, ...named];
+
+const heroImage = page.hero?.src ?? decodeURIComponent(project.image);
+const heroAlt = page.hero?.alt ?? project.name;
+
+/* V3 set the summary title over two lines and capitalised words that began one:
+   "Modern Living / In Lincoln Park". Run onto a single row those capitals are
+   typos. The break does not always fall between clauses either — 200 W Ohio
+   splits as "Mixed-Use Infill On / Ohio & Wells" — so this lowers connectors
+   anywhere but the first word rather than only at the join. Proper nouns are
+   untouched: "Redefining / Nashville's Skyline" keeps its N. */
+const CONNECTORS = new Set(['in', 'on', 'at', 'to', 'for', 'with', 'the', 'and', 'of']);
+const summaryTitle = page.summaryTitle
+  .join(' ')
+  .split(' ')
+  .map((word, i) => (i > 0 && CONNECTORS.has(word.toLowerCase()) ? word.toLowerCase() : word))
+  .join(' ');
+---
+
+<Base
+  title={`${project.name} | Newstreet`}
+  description={page.summary[0] ?? `${project.name} — ${project.location}.`}
+  transparentNav={true}
+>
+  <!-- ===== Hero =============================================
+       The one full-bleed image on the page: the project is the
+       page's subject, so it holds the role the home hero holds
+       there. Caption sits on the page grid, as it does at home. -->
+  <section class="hero" aria-labelledby="project-name">
+    <Photo
+      class="hero__img"
+      src={heroImage}
+      alt={heroAlt}
+      sizes="100vw"
+      loading="eager"
+      fetchpriority="high"
+    />
+
+    <div class="hero__caption">
+      <span class:list={['stage', 'stage--on-dark', `stage--${project.stage}`]}>
+        <span class="stage__dot"></span>{stageLabel(project.stage)}
+      </span>
+      <!-- `display--lg`, the same scale every other hero on the site carries.
+           This ran at plain `display` — 26–38px against the 34–60px of the
+           About, Team, Portfolio and Press heroes — so the one page whose
+           subject IS the building announced it more quietly than the pages
+           about the firm. -->
+      <h1 id="project-name" class="display display--lg hero__name">{project.name}</h1>
+      {page.address && <p class="hero__line">{page.address}</p>}
+      {page.city && <p class="hero__line hero__line--soft">{page.city}</p>}
+    </div>
+  </section>
+
+  <!-- ===== Summary =========================================
+       Split. The open left column carries the way back out. -->
+  <section class="band band--paper band--flush-top" aria-labelledby="summary-heading">
+    <div class="band__inner">
+      <!-- Two rows of the same Split grid, so the Description label lands on
+           the prose it names rather than being nudged into place. -->
+      <div class="grid summary">
+        <div class="grid__kicker">
+          <a class="action-link" href="/portfolio">
+            <span class="action-link__arrow action-link__arrow--back">←</span> Portfolio
+          </a>
+        </div>
+        <div class="grid__main">
+          <h2 id="summary-heading" class="display">{summaryTitle}</h2>
+        </div>
+
+        <div class="grid__kicker">
+          <span class="kicker summary__label">Description</span>
+        </div>
+        <div class="grid__main">
+          {page.summary.map((paragraph) => <p class="prose summary__prose">{paragraph}</p>)}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== The facts =======================================
+       Two blocks side by side, each with its own heading and its
+       own rhythm — who built it, and what it is. Stacked full
+       width they read as one undifferentiated table. -->
+  <section class="band band--tint" aria-label="Project details">
+    <div class="band__inner facts">
+      <div class="facts__col facts__col--team">
+        <h2 class="kicker">Project Team</h2>
+
+        {/* THE SAME ROW AS THE SUMMARY BESIDE IT — label left, party right.
+            This stacked the party under its role and set a vendor logo beside
+            the name. Two objects for one kind of fact made the left column read
+            as a different sort of thing from the right, and the marks arrived
+            in third-party colours on a monochrome page. Role and party is a
+            label and a value, which the summary row already states. */}
+        <dl class="facts__rows">
+          {page.team.map((member) => (
+            <div class="facts__row">
+              <dt class="facts__label">{member.role}</dt>
+              <dd class="facts__party">{member.name}</dd>
+            </div>
+          ))}
+        </dl>
+
+        {page.website && (
+          <a class="action-link facts__link" href={page.website} target="_blank" rel="noopener">
+            Project website <span class="action-link__arrow">→</span>
+          </a>
+        )}
+      </div>
+
+      <div class="facts__col facts__col--summary">
+        <h2 class="kicker">Project Summary</h2>
+
+        <dl class="facts__rows">
+          {summary.map((figure) => (
+            <div class="facts__row">
+              <dt class="facts__label">{figure.label}</dt>
+              <dd
+                class:list={['facts__value', !isNumeric(figure.value) && 'facts__value--text']}
+              >{figure.value}</dd>
+            </div>
+          ))}
+        </dl>
+
+        <p class="facts__note meta">
+          As designed; subject to change through construction.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Gallery ========================================= -->
+  {page.gallery.length > 0 && <Gallery images={page.gallery} />}
+
+  <!-- ===== Close =========================================== -->
+  <section class="band band--dark" aria-labelledby="close-heading">
+    <div class="band__inner close">
+      <div class="close__lede">
+        <span class="kicker">Investor Relations</span>
+        <h2 id="close-heading" class="display">Interested in this project?</h2>
+        <p class="prose">
+          The current information package covers strategy, active projects, and the
+          reporting cadence you can expect.
+        </p>
+      </div>
+      <a class="action" href="/investors#request">
+        Request information <span class="action__arrow">→</span>
+      </a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* ---- Hero -------------------------------------------------
+     Full bleed, full height — the project is the page's subject.
+     `svh` first so mobile browser chrome does not push the caption
+     off-screen the way a raw 100vh does; the vh line is the fallback
+     for anything that does not know the unit. */
+  .hero {
+    position: relative;
+    height: 100vh;
+    height: 100svh;
+    min-height: 520px;
+    overflow: hidden;
+    background: var(--dark);
+  }
+  .hero__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  /* Weighted top and bottom only — for the nav and the caption. The lower stop
+     starts high enough to cover the caption's full height: a render can be
+     bright exactly where the address sits, and white on a sunlit facade is not
+     legible on the strength of the type alone. */
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.42) 0%,
+      rgba(0, 0, 0, 0) 26%,
+      rgba(0, 0, 0, 0) 38%,
+      rgba(0, 0, 0, 0.82) 100%
+    );
+  }
+
+  .hero__caption {
+    position: absolute;
+    left: var(--gutter);
+    right: var(--gutter);
+    bottom: var(--s-xl);
+    z-index: 1;
+    color: #fff;
+  }
+  .hero__name {
+    margin-top: var(--s-sm);
+    color: #fff;
+  }
+  .hero__line {
+    margin-top: var(--s-xs);
+    font-size: var(--size-body-sm);
+    color: rgba(255, 255, 255, 0.86);
+  }
+  .hero__line--soft {
+    margin-top: 2px;
+    color: rgba(255, 255, 255, 0.6);
+  }
+  .stage--on-dark {
+    color: rgba(255, 255, 255, 0.78);
+  }
+  /* The ramp inverts on dark: the value scale has to stay readable against it. */
+  .stage--on-dark .stage__dot {
+    background: rgba(255, 255, 255, 0.5);
+  }
+  .stage--on-dark.stage--under-construction .stage__dot {
+    background: rgba(255, 255, 255, 0.75);
+  }
+  .stage--on-dark.stage--completed .stage__dot {
+    background: #fff;
+  }
+
+  /* ---- Summary ----------------------------------------------
+     The label row spaces away from the heading; base.css already
+     spaces the paragraphs from each other. */
+  .summary {
+    row-gap: var(--s-md);
+  }
+  /* Optically level with the first line of prose beside it: a 10px label and
+     14px body do not share a top edge on their own. */
+  .summary__label {
+    margin-top: 4px;
+  }
+  .summary__prose:first-child {
+    margin-top: 0;
+  }
+
+  /* The back link is the one arrow that points the other way. */
+  .action-link__arrow--back {
+    transition: transform 0.35s var(--ease-out);
+  }
+  .action-link:hover .action-link__arrow--back {
+    transform: translateX(-3px);
+  }
+
+  /* ---- Facts ------------------------------------------------
+     Two columns held apart by gap, never by a rule. The summary sits
+     right of centre so the values land on a shared right edge — that
+     edge is what the eye runs down. */
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--s-lg);
+  }
+  .facts__col--team {
+    grid-column: 1 / 6;
+  }
+  .facts__col--summary {
+    grid-column: 7 / 13;
+  }
+
+  .facts__rows {
+    margin-top: var(--s-md);
+    border-top: 1px solid var(--rule);
+  }
+  .facts__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s-md);
+    padding: var(--s-sm) 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  /* `.facts__row--stacked` and `.facts__logo` were here. The team column used
+     to stack its party under its role and set a vendor mark beside the name;
+     it now uses the same label-left/value-right row as the summary. */
+
+  /* THE PARTY IS A NAME, NOT A FIGURE. It takes the summary's row but not the
+     summary's scale: `.facts__value` is display size because a unit count is
+     meant to pull the eye down the column, and a general contractor's name set
+     that large shouts louder than the project's own numbers — and wraps to
+     three lines doing it. Body size, ranged right on the same baseline. */
+  .facts__party {
+    font-size: var(--size-body);
+    line-height: 1.4;
+    text-align: right;
+    text-wrap: balance;
+  }
+
+  .facts__label {
+    font-size: var(--size-label);
+    font-weight: 500;
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    line-height: 1.4;
+    color: var(--ink-faint);
+    flex: none;
+  }
+  /* Set at display scale, not figure scale: `figure` is reserved for the
+     firm's published headline numbers on the home page. These are spec
+     values — large enough to pull the eye down the column, not large
+     enough to claim to be the largest thing on the site. */
+  .facts__value {
+    font-family: var(--font-display);
+    font-size: var(--size-display);
+    line-height: 1.1;
+    letter-spacing: -0.005em;
+    font-variant-numeric: tabular-nums lining-nums;
+    text-align: right;
+  }
+  /* A named value sits at the same size as the numbers it is listed beside —
+     a tenant is as much a project fact as a unit count, and shrinking it made
+     the column look like it had two tiers of importance. It wraps where a
+     number does not, so it keeps a readable line height. */
+  .facts__value--text {
+    line-height: 1.25;
+    text-wrap: balance;
+  }
+
+  .facts__link {
+    margin-top: var(--s-lg);
+  }
+  .facts__note {
+    margin-top: var(--s-md);
+  }
+
+  /* The gallery is its own band and owns its own styles — see Gallery.astro. */
+
+  /* ---- Close ------------------------------------------------ */
+  .close {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--s-xl);
+  }
+  .close__lede {
+    max-width: 46ch;
+  }
+  .close__lede .display,
+  .close__lede .prose {
+    margin-top: var(--s-md);
+  }
+  .close .action {
+    flex: none;
+  }
+
+  @media (max-width: 900px) {
+    .facts__col--team,
+    .facts__col--summary {
+      grid-column: 1 / 13;
+    }
+    .facts__col--summary {
+      margin-top: var(--s-xl);
+    }
+    .close {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+</style>

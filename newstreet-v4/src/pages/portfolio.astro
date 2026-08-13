@@ -1,0 +1,456 @@
+---
+/**
+ * Portfolio index.
+ *
+ * The site's half-height hero, then two bands. An introduction in the Split
+ * layout — kicker left, heading and prose right — states what the record is and
+ * how to read it; then a tint band carrying the filter bar and the grid.
+ *
+ * V3's mosaic was retired. Its alternating wide/narrow tiles with white type
+ * over a scrim made the index read as a different site than the home page,
+ * which shows the same projects as ProjectCard on the page ground. The filter
+ * behaviour is inherited unchanged — it was working and needed no reinvention.
+ */
+import Base from '../layouts/Base.astro';
+import Photo from '../components/Photo.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import portfolio from '../data/projects.json';
+
+const { projects } = portfolio;
+
+/* THE UNDERWRITING CRITERIA ARE STATED ONCE, ON ABOUT THE FIRM. This page
+   carried its own three — Neighborhood Selection, Entitled Opportunities,
+   Institutional Underwriting — hand-written here rather than read from
+   `firm.js`, saying the same things in different words and in a different
+   case. Two lists of criteria on one site are two lists to keep in agreement,
+   and they had already drifted. The map band keeps its own claim about where
+   the portfolio sits; what an asset has to clear to get on it belongs to the
+   page that argues the firm's method. */
+
+/** Filter options are derived from the records, never hand-listed. */
+const optionsFor = (key, order) => {
+  const present = new Set(
+    projects.flatMap((p) => (key === 'type' ? p.type.split(' ') : [p[key]])).filter(Boolean),
+  );
+  return order.filter((o) => present.has(o.value));
+};
+
+const stageOptions = optionsFor('stage', [
+  { value: 'pre-development', label: 'Pre-Development' },
+  { value: 'under-construction', label: 'Under Construction' },
+  { value: 'completed', label: 'Completed' },
+]);
+
+const typeOptions = optionsFor('type', [
+  { value: 'multifamily', label: 'Multifamily' },
+  { value: 'mixed-use', label: 'Mixed-Use' },
+  { value: 'hotel', label: 'Hotel' },
+]);
+
+const views = [
+  { value: 'developments', label: 'Developments' },
+  { value: 'investments', label: 'Investments' },
+];
+
+---
+
+<Base
+  title="Portfolio | Newstreet"
+  description="Newstreet's multifamily and mixed-use portfolio across development and investment positions — from pre-development through completion."
+  transparentNav={true}
+>
+  <!-- ===== Hero =============================================
+       A STILL, NOT A ROTATION. This ran five of the firm's own
+       frames on a 6s cycle, which solved a real problem — an index of
+       many assets cannot open on one of them without appearing to
+       rank it — but solved it by moving, and the reader who is here
+       to compare assets is made to wait on a frame that changes under
+       them. A city frame that is nobody's asset ranks nothing and
+       holds still, which is the same answer without the motion.
+
+       As on /about, the hero carries no credit — this is atmosphere,
+       not a located record, and it does not earn a caption. The assets
+       themselves are below, where each carries its own name.
+
+       THE ONE LANDSCAPE SOURCE IN THE SET, and it shows: at 5910×3325
+       the 2.8:1 band takes about two thirds of the frame's height
+       rather than the quarter a portrait gives up, so the composition
+       survives the crop instead of being a slice of it.
+
+       90% is the band where the skyline sits fully inside the arch.
+       Higher up the opening closes and the view is lost; this is the
+       one crop that keeps both the timber and what it frames. The
+       caption falls on the dark timber at the lower left. -->
+  <section class="hero hero--half" aria-labelledby="portfolio-heading">
+    <Photo
+      class="hero__img"
+      src="Media/pexels-chaitaastic-2088233.jpg"
+      alt="The Chicago skyline seen through the arch of a curved timber lattice pavilion in Lincoln Park, the city framed in the opening at dusk"
+      sizes="100vw"
+      loading="eager"
+      fetchpriority="high"
+      position="center 90%"
+    />
+
+    <div class="hero__caption">
+      <span class="kicker hero__kicker">Portfolio</span>
+      <!-- Tracks the view toggle in the filter bar below: Developments /
+           Investments. Rendered as the default view so it is already correct
+           before any script runs, and with no JS it simply stays right for the
+           set the page opens on. -->
+      <h1
+        id="portfolio-heading"
+        class="display display--lg hero__title"
+        data-view-title
+      >Our {views[0].label}</h1>
+    </div>
+  </section>
+
+  <!-- ===== Introduction =====================================
+       Split, beneath the hero. The heading the hero carries is
+       the page's h1, so this states the claim at section scale.
+       The band carries text only, so no header is stacked above it.
+
+       This was "The Record" / "The full record, at every stage.",
+       written to introduce two paragraphs that are gone: the asset
+       counts, and the note that each project is listed at the stage
+       it is actually in. With those out, the heading named a framing
+       the copy no longer delivered. Kicker and heading now describe
+       what the paragraph beside them actually says. The grid below
+       still shows every stage — it just is not what this band
+       announces any more. -->
+  <section class="band band--paper band--flush-top" aria-labelledby="intro-heading">
+    <div class="band__inner">
+      <div class="grid">
+        <span class="kicker grid__kicker">How We Build</span>
+
+        <div class="grid__main">
+          <h2 id="intro-heading" class="display">Developing with intention</h2>
+          <p class="prose">
+            Newstreet develops residential and mixed-use multifamily housing designed to
+            contribute positively to the neighborhoods around it and improve the everyday
+            experience of the people who live there. Our long-term perspective and attention
+            to detail help us create properties that are functional, thoughtful, and built to
+            endure.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== The index ========================================
+       Ground alternates; the introduction is the only band before it. -->
+  <section class="band band--tint" aria-label="Project index">
+    <div class="band__inner">
+      <!-- ===== Filters =====
+           The bar opens the band directly: with the introduction above
+           carrying the heading, a second header here named nothing the
+           filter row didn't already say. -->
+
+      <section class="filters" aria-label="Project filters">
+        <div class="filters__bar">
+          <div class="filters__views" role="group" aria-label="Portfolio view">
+            {views.map((v, i) => (
+              <>
+                {i > 0 && <span class="filters__sep" aria-hidden="true">/</span>}
+                <button
+                  class:list={['filter-opt', 'filter-opt--view', i === 0 && 'is-active']}
+                  type="button"
+                  data-group="view"
+                  data-value={v.value}
+                  aria-pressed={i === 0 ? 'true' : 'false'}
+                >{v.label}</button>
+              </>
+            ))}
+          </div>
+
+          <div class="filters__groups">
+            <div class="filter-group" data-group="stage">
+              <button class="filter-group__label" type="button" aria-expanded="false">
+                Stage<span class="filter-group__caret" aria-hidden="true"></span>
+              </button>
+            </div>
+            <div class="filter-group" data-group="type">
+              <button class="filter-group__label" type="button" aria-expanded="false">
+                Asset Type<span class="filter-group__caret" aria-hidden="true"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="filters__panels" data-panels hidden>
+          <div class="filter-panel" data-panel="stage">
+            {stageOptions.map((o) => (
+              <button class="filter-opt" type="button" data-group="stage" data-value={o.value} aria-pressed="false">
+                {o.label}
+              </button>
+            ))}
+          </div>
+          <div class="filter-panel" data-panel="type">
+            {typeOptions.map((o) => (
+              <button class="filter-opt" type="button" data-group="type" data-value={o.value} aria-pressed="false">
+                {o.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div class="filters__footer" data-reset-wrap hidden>
+          <button class="filters__reset" type="button" data-reset>Reset filters</button>
+        </div>
+      </section>
+
+      <!-- ===== Grid ===== -->
+      <div class="projects" data-grid>
+        {projects.map((project) => (
+          <ProjectCard
+            project={project}
+            data-slug={project.slug}
+            data-view={project.view}
+            data-stage={project.stage}
+            data-type={project.type}
+          />
+        ))}
+      </div>
+
+      <p class="projects__empty" data-empty hidden>
+        No projects match these filters.
+      </p>
+    </div>
+  </section>
+
+  {/* THE "WHERE WE BUILD" MAP BAND WAS HERE AND IS OUT. It closed the index
+      with the portfolio plotted on a map, under "Concentrated by design". The
+      index itself is the record this page exists to show; the map restated it
+      geographically and pushed the grid further from the foot of the page.
+      `ProjectMap` still runs on About the Firm, which is now its only caller,
+      so the component, `geo.json`, and the crops are all still live. */}
+</Base>
+
+<style>
+  /* ---- Filters --------------------------------------------
+     V3's arrangement kept: view toggle left, expandable groups
+     right, reset appearing only once something is selected. */
+  /* The bar is the first thing in its band, so the band's padding is its
+     only clearance. */
+  .filters {
+    margin-top: 0;
+  }
+  .filters__bar {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s-lg);
+    flex-wrap: wrap;
+    padding-bottom: var(--s-md);
+    border-bottom: 1px solid var(--rule);
+  }
+  .filters__views,
+  .filters__groups {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-md);
+  }
+  .filters__sep {
+    color: var(--ink-faint);
+  }
+
+  .filter-opt,
+  .filter-group__label,
+  .filters__reset {
+    font-family: var(--font-text);
+    font-size: var(--size-label);
+    font-weight: 500;
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    line-height: 1;
+    color: var(--ink-faint);
+    background: none;
+    border: 0;
+    padding: 6px 0;
+    cursor: pointer;
+    transition: color 0.3s var(--ease-out);
+  }
+  .filter-opt:hover,
+  .filter-group__label:hover,
+  .filters__reset:hover {
+    color: var(--ink);
+  }
+  .filter-opt.is-active {
+    color: var(--ink);
+  }
+
+  /* Selection is shown by an underline, not a filled pill — a filled
+     chip would be the only rounded, grounded object on the page. */
+  .filter-opt:not(.filter-opt--view).is-active {
+    box-shadow: inset 0 -1px 0 var(--ink);
+  }
+
+  .filter-group__label {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .filter-group.has-selection .filter-group__label {
+    color: var(--ink);
+  }
+  .filter-group__caret {
+    width: 5px;
+    height: 5px;
+    border-right: 1px solid currentColor;
+    border-bottom: 1px solid currentColor;
+    transform: translateY(-2px) rotate(45deg);
+    transition: transform 0.35s var(--ease-out);
+  }
+  .filter-group.is-open .filter-group__caret {
+    transform: translateY(0) rotate(225deg);
+  }
+
+  .filters__panels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-md) var(--s-xl);
+    padding: var(--s-md) 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  /* A display rule outranks the hidden attribute, so restate it. */
+  .filters__panels[hidden] {
+    display: none;
+  }
+  .filter-panel {
+    display: none;
+    flex-wrap: wrap;
+    gap: var(--s-md);
+  }
+  .filter-panel.is-open {
+    display: flex;
+  }
+
+  .filters__footer {
+    padding-top: var(--s-md);
+  }
+  .filters__reset {
+    color: var(--ink-soft);
+  }
+
+  /* Nav clearance is handled by `main--solid-nav` in base.css. */
+
+  @media (max-width: 900px) {
+    .filters__bar {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--s-sm);
+    }
+  }
+</style>
+
+<script>
+  const tiles = Array.from(document.querySelectorAll('[data-grid] .project'));
+  const panelWrap = document.querySelector('[data-panels]');
+  const resetWrap = document.querySelector('[data-reset-wrap]');
+  const emptyEl = document.querySelector('[data-empty]');
+
+  const active = { stage: new Set(), type: new Set() };
+  let view = 'developments';
+
+  /* The hero names the set on screen, so it follows the view toggle. Its text
+     is read off the toggle's own label rather than duplicated here — one place
+     spells "Developments", and a renamed view carries the heading with it. */
+  const viewTitle = document.querySelector('[data-view-title]');
+  const nameView = () => {
+    const opt = document.querySelector(`.filter-opt--view[data-value="${view}"]`);
+    if (viewTitle && opt) viewTitle.textContent = `Our ${opt.textContent.trim()}`;
+  };
+
+  const apply = () => {
+    nameView();
+    const visibleSlugs = [];
+
+    for (const tile of tiles) {
+      const stage = tile.dataset.stage;
+      const types = (tile.dataset.type || '').split(' ');
+      const matches =
+        tile.dataset.view === view &&
+        (active.stage.size === 0 || active.stage.has(stage)) &&
+        (active.type.size === 0 || types.some((t) => active.type.has(t)));
+
+      tile.hidden = !matches;
+      if (matches) visibleSlugs.push(tile.dataset.slug);
+    }
+
+    const visible = visibleSlugs.length;
+
+    /* The map listens for this and shows the same set, so the two never
+       contradict each other. */
+    document.dispatchEvent(
+      new CustomEvent('portfolio:filter', { detail: { slugs: visibleSlugs } }),
+    );
+
+    emptyEl.hidden = visible > 0;
+
+    const anyActive = active.stage.size > 0 || active.type.size > 0;
+    resetWrap.hidden = !anyActive;
+
+    for (const group of document.querySelectorAll('.filter-group')) {
+      group.classList.toggle('has-selection', active[group.dataset.group].size > 0);
+    }
+  };
+
+  // Expandable filter groups
+  for (const group of document.querySelectorAll('.filter-group')) {
+    const label = group.querySelector('.filter-group__label');
+    const panel = document.querySelector(`.filter-panel[data-panel="${group.dataset.group}"]`);
+
+    label.addEventListener('click', () => {
+      const open = !group.classList.contains('is-open');
+      for (const other of document.querySelectorAll('.filter-group')) {
+        other.classList.remove('is-open');
+        other.querySelector('.filter-group__label').setAttribute('aria-expanded', 'false');
+      }
+      for (const p of document.querySelectorAll('.filter-panel')) p.classList.remove('is-open');
+
+      group.classList.toggle('is-open', open);
+      label.setAttribute('aria-expanded', String(open));
+      panel.classList.toggle('is-open', open);
+      panelWrap.hidden = !document.querySelector('.filter-panel.is-open');
+    });
+  }
+
+  // Stage / type options — multi-select, click again to clear
+  for (const opt of document.querySelectorAll('.filter-opt[data-group="stage"], .filter-opt[data-group="type"]')) {
+    opt.addEventListener('click', () => {
+      const set = active[opt.dataset.group];
+      const value = opt.dataset.value;
+      const on = !set.has(value);
+      on ? set.add(value) : set.delete(value);
+      opt.classList.toggle('is-active', on);
+      opt.setAttribute('aria-pressed', String(on));
+      apply();
+    });
+  }
+
+  // View toggle
+  for (const opt of document.querySelectorAll('.filter-opt--view')) {
+    opt.addEventListener('click', () => {
+      view = opt.dataset.value;
+      for (const other of document.querySelectorAll('.filter-opt--view')) {
+        const isActive = other === opt;
+        other.classList.toggle('is-active', isActive);
+        other.setAttribute('aria-pressed', String(isActive));
+      }
+      apply();
+    });
+  }
+
+  document.querySelector('[data-reset]').addEventListener('click', () => {
+    active.stage.clear();
+    active.type.clear();
+    for (const opt of document.querySelectorAll('.filter-opt:not(.filter-opt--view)')) {
+      opt.classList.remove('is-active');
+      opt.setAttribute('aria-pressed', 'false');
+    }
+    apply();
+  });
+
+  apply();
+</script>
