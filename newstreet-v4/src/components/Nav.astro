@@ -5,16 +5,17 @@
  */
 const { transparent = false } = Astro.props;
 
-/* Investment Strategy has no page of its own: the lifecycle and the principles
-   that make up that content live on the investors page. This pointed at
-   `#lifecycle` so the label landed on its own section, but a nav item that
-   drops the reader into the middle of a page they have not seen the top of
-   reads as a mis-load, not as precision — the hero that says what the page is
-   goes past before they can read it. It opens the page, and the page's own
-   order does the rest. */
+/* The middle entry is named for where it goes. There is no strategy page: the
+   lifecycle and the principles that make up that content live on the investors
+   page, so a label reading "Investment Strategy" promised a route the site does
+   not have. It once pointed at `#lifecycle` to make the label true, but a nav
+   item that drops the reader into the middle of a page they have not seen the
+   top of reads as a mis-load, not as precision — the hero that says what the
+   page is goes past before they can read it. Naming it for the destination
+   settles both: it opens the page, and the page's own order does the rest. */
 const firmLinks = [
   { label: 'About the Firm', href: '/about' },
-  { label: 'Investment Strategy', href: '/investors' },
+  { label: 'Investors', href: '/investors' },
   { label: 'Team', href: '/team' },
 ];
 ---
