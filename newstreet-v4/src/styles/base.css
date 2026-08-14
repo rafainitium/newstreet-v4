@@ -552,9 +552,15 @@ a {
 /* ---------- Ledger: the figure display ----------------------
    Columns held apart by space, not by rules. */
 
+/* Cells hug their content and distribute across the measure, so the row
+   spans edge to edge the way the project grid does. With `1fr` columns the
+   cells were equal but their text was not, and the short last label left a
+   gap at the right margin that read as the whole row being left-aligned.
+   `gap` becomes the minimum separation rather than the fixed one. */
 .ledger__row {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, auto);
+  justify-content: space-between;
   gap: var(--s-lg);
 }
 

@@ -165,6 +165,6 @@ export const principles = [
   },
   {
     title: 'Institutional discipline',
-    body: 'We approach every project with disciplined, conservative underwriting. Our process emphasizes careful planning, trusted industry insight, and a philosophy of building to hold while structuring to sell.',
+    body: 'We approach every project with disciplined, conservative underwriting. Input from experts across key disciplines ensures our assumptions reflect current market conditions.',
   },
 ];

@@ -163,10 +163,10 @@ const formatDate = (iso) =>
        sentences and a link do the work the columns were doing, and
        the page stops answering a question it should be raising.
 
-       The link lands on `#advantage` rather than the top of the
-       page — a reader sent from this block is asking about the
-       advantage specifically, and the band clears the nav on
-       arrival via the `.band[id]` scroll-margin rule. -->
+       The link lands on the top of About the Firm rather than deep
+       linking to `#advantage`: the case this block raises is made
+       across the whole page, and dropping a reader mid-page skips
+       the opening that frames it. -->
   <section class="band band--tint" aria-labelledby="difference-heading">
     <div class="band__inner">
       <div class="grid rise">
@@ -181,7 +181,7 @@ const formatDate = (iso) =>
             execution. Discover the Newstreet advantage that enables us to identify and
             deliver successful developments.
           </p>
-          <a class="action-link" href="/about#advantage">
+          <a class="action-link" href="/about">
             About the firm <span class="action-link__arrow">→</span>
           </a>
         </div>
@@ -203,6 +203,11 @@ const formatDate = (iso) =>
        so the phases cannot drift apart — only what is shown of
        them differs.
 
+       The lede is the home page's own. It was the last thing still
+       shared verbatim with /investors, which left the dedup half
+       done: the phases read as a summary while the paragraph above
+       them repeated the deeper page word for word.
+
        Form is the paired image-beside-text object, the same one
        the investors page's Reporting section uses, portrait
        figure and all. The number stays: in this system a number
@@ -221,10 +226,8 @@ const formatDate = (iso) =>
         <span class="kicker">Investment Lifecycle</span>
         <h2 id="lifecycle-heading" class="display">A typical investment lifecycle</h2>
         <p class="prose">
-          From sourcing an opportunity to realizing its value, a real estate investment
-          moves through a series of distinct phases. While each investment is different,
-          the lifecycle below provides a general framework for how opportunities are
-          evaluated, executed, and managed through ownership.
+          A high-level view of how Newstreet sources, evaluates, executes, and manages
+          investments through realization.
         </p>
 
         <ol class="stages">
@@ -278,11 +281,10 @@ const formatDate = (iso) =>
       <div class="section-header rise">
         <div class="section-header__text">
           <span class="kicker">In the News</span>
-          <h2 id="press-heading" class="display">Recent coverage of the portfolio</h2>
+          <h2 id="press-heading" class="display">In the press</h2>
           <p class="prose">
-            Coverage of Newstreet projects in the Chicago and national real estate press.
-            Every headline links out to the publication that ran it, and the full index is
-            grouped by year on the press page.
+            Recent coverage of Newstreet and our projects across Chicago and national real
+            estate media.
           </p>
         </div>
         <a class="action-link section-header__action" href="/press">
@@ -318,25 +320,24 @@ const formatDate = (iso) =>
         <h2 id="close-heading" class="display">Let's build what's next</h2>
         <p class="prose">
           We work with a small group of investors who want to understand what they own.
-          The current information package covers strategy, active projects, and the
-          reporting cadence you can expect.
         </p>
       </div>
 
-      <!-- An inset well, not a bordered card: the ground change carries the edge. -->
+      <!-- An inset well, not a bordered card: the ground change carries the edge.
+
+           The shared contact panel, matching About the Firm, Investor
+           Relations, and Team. It was a "Stay connected" well promising
+           updates on acquisitions, milestones, and market insight — a
+           subscription the firm does not run, and a second offer on a band
+           that already has one. The `?about=investors` route stays, so the
+           form still arrives pre-set for the reader this close addresses. -->
       <div class="close__panel rise">
-        <span class="kicker">Stay connected</span>
+        <span class="kicker">Get in Touch</span>
         <p class="prose">
-          Receive updates on acquisitions, project milestones, and market insight directly
-          from Newstreet.
+          Contact the Newstreet team to start the conversation.
         </p>
-        <!-- Straight to the form. The deeper pages route through the investors
-             request band because there the offer still needs explaining; here
-             the reader has just read the whole page and the CTA names the
-             action, so a stop at another page's band to press a second button
-             is a step that only loses people. -->
         <a class="action close__action" href="/contact?about=investors">
-          Request information <span class="action__arrow">→</span>
+          Contact us <span class="action__arrow">→</span>
         </a>
       </div>
     </div>

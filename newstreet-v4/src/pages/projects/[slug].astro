@@ -180,13 +180,12 @@ const summaryTitle = page.summaryTitle
       <div class="close__lede">
         <span class="kicker">Investor Relations</span>
         <h2 id="close-heading" class="display">Interested in this project?</h2>
-        <p class="prose">
-          The current information package covers strategy, active projects, and the
-          reporting cadence you can expect. Ask for it and we will send it across, along
-          with a time to talk through this project if that would help.
-        </p>
       </div>
-      <a class="action" href="/investors#request">
+      <!-- Straight to the form, matching the home page. This action used to
+           point at the investors request band, where the reader met a second
+           button that said the same thing; a stop at another page's band to
+           press it again is a step that only loses people. -->
+      <a class="action" href="/contact?about=investors">
         Request information <span class="action__arrow">→</span>
       </a>
     </div>
@@ -382,8 +381,7 @@ const summaryTitle = page.summaryTitle
   .close__lede {
     max-width: 46ch;
   }
-  .close__lede .display,
-  .close__lede .prose {
+  .close__lede .display {
     margin-top: var(--s-md);
   }
   .close .action {

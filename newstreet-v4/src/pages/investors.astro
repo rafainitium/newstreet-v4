@@ -36,46 +36,45 @@ const reporting = [
     label: 'Development updates',
     items: ['Construction updates', 'Project milestones', 'Timeline reporting'],
   },
-  {
-    label: 'Market intelligence',
-    items: ['Economic trends', 'Market commentary', 'Acquisition updates'],
-  },
 ];
 
 /**
- * DRAFT ANSWERS — these need the firm's sign-off before launch.
+ * The wireframe supplies the four questions and no answers.
  *
- * The wireframe supplies the four questions and no answers. Every answer below
- * is assembled only from commitments the site or PRODUCT.md already makes:
- * accredited individuals and institutions, the quarterly cadence named in the
- * reporting section above, and the lifecycle's own words on hold period. No
- * hold-period range, no return figure, no minimum check size, and no AUM is
- * stated here, because none of those is confirmed anywhere and this page is
- * the last place to invent one.
+ * All four answers are the FIRM'S OWN WORDS, supplied directly and not
+ * assembled from the rest of the site. That matters for two of them: the
+ * investor base (family offices, high-net-worth individuals, institutions) is
+ * more specific than the "accredited individuals and institutions" the page
+ * carried before, and the 3–5 year hold period is a figure the site had
+ * deliberately never stated, because nothing else here confirms one. Both are
+ * now the firm's to stand behind.
+ *
+ * Still absent by the same rule, since none is confirmed anywhere: return
+ * figures, minimum check size, AUM.
  */
 const faqs = [
   {
     q: 'Who typically invests with Newstreet?',
-    a: 'Accredited individuals and institutions. We work with a small group of investors who want to understand what they own, which is why the process above is published rather than summarized.',
+    a: 'Newstreet’s investor base includes family offices, high-net-worth individuals, and institutional investors.',
   },
   {
-    q: 'How often will I receive updates?',
-    a: 'Performance reporting is quarterly. Development and construction milestones are reported as they occur rather than held to the quarter, and variances to underwriting are raised when we see them.',
+    q: 'What types of projects do you develop?',
+    a: 'Newstreet develops mixed-use, multifamily, adaptive reuse, and hospitality projects, with a primary focus on mixed-use multifamily.',
   },
   {
     q: 'How long are investments typically held?',
-    a: 'It depends on the asset and the market rather than on a fund clock. We underwrite to hold and structure to sell, so a refinance or disposition is timed to the business plan the capitalization was built around.',
+    a: 'While capital events vary with market conditions, investments are typically projected around a 3–5 year hold period.',
   },
   {
-    q: 'How do I learn about new opportunities?',
-    a: 'Request the current information package below. It covers strategy, active projects, and the reporting cadence you can expect, and it is how new acquisitions and offerings are circulated.',
+    q: 'Do you acquire properties directly?',
+    a: 'Yes. We evaluate land, underutilized buildings, redevelopment sites, and value-add opportunities.',
   },
 ];
 ---
 
 <Base
   title="Investor Relations | Newstreet"
-  description="How Newstreet sources, underwrites, capitalizes, and realizes multifamily investments — the principles that govern each decision, the reporting investors receive, and how to request the current information package."
+  description="How Newstreet sources, underwrites, capitalizes, and realizes multifamily investments — the principles that govern each decision, the reporting investors receive, and how to get in touch."
   transparentNav={true}
 >
   <!-- ===== Hero =============================================
@@ -113,10 +112,8 @@ const faqs = [
           <span class="kicker">Our Investment Principles</span>
           <h2 id="principles-heading" class="display">Principles that guide every decision</h2>
           <p class="prose">
-            These are the standards every opportunity is measured against, and they hold at
-            every stage of the process below — from the first look at a site through to the
-            decision to refinance or sell. They are what keep the portfolio consistent as it
-            grows, and what a new project is judged against before capital is committed.
+            Newstreet carries a dedicated set of principles that guide how we evaluate,
+            execute, and manage developments at every stage.
           </p>
         </div>
       </div>
@@ -145,7 +142,7 @@ const faqs = [
             From sourcing an opportunity to realizing its value, a real estate investment
             moves through a series of distinct phases. While each investment is different,
             the lifecycle below provides a general framework for how opportunities are
-            evaluated, executed, and managed through ownership.
+            managed through ownership.
           </p>
         </div>
       </div>
@@ -246,13 +243,12 @@ const faqs = [
   <!-- ===== Close ============================================
        THE SHARED CONTACT CLOSE, matching About the Firm and Team.
        This was the request-the-package block — kicker "Request
-       Information", "Ask for the current package" — and `id="request"`
-       is KEPT, because the footer's "Request Information" link and
-       every project page's action point at it. Those two links now
-       land on a general contact band rather than on the offer they
-       name; see the note in chat. The action still carries the
-       `?about=investors` route so the form arrives pre-set to the
-       investor enquiry, which is what those readers came for. -->
+       Information", "Ask for the current package". Every "Request
+       information" action on the site now goes straight to the form
+       at /contact?about=investors rather than landing here, where
+       the reader met a second button saying the same thing. The
+       `id="request"` is KEPT so old inbound links still resolve to
+       the page's contact band. -->
   <section class="band band--dark close" id="request" aria-labelledby="request-heading">
     <div class="band__inner close__grid">
       <div class="close__lede rise">

@@ -24,7 +24,7 @@ import Photo from '../components/Photo.astro';
  * subject says which inbox it belongs in.
  *
  * `slug` is how the REST OF THE SITE ARRIVES HERE ALREADY ROUTED. Every "write
- * to us" elsewhere used to be its own mailto — a press enquiry, an investor
+ * to us" elsewhere used to be its own mailto — a press inquiry, an investor
  * request — which meant the routing this form already does was being done four
  * separate times in four separate ways, none of them reaching the form. Those
  * now link to /contact?about=<slug> instead, so the reader lands on the right
@@ -40,7 +40,7 @@ const inquiryTypes = [
 
 <Base
   title="Contact | Newstreet"
-  description="Contact Newstreet — investor relations, development opportunities, media enquiries, and general questions. Chicago, Illinois."
+  description="Contact Newstreet — investor relations, development opportunities, media inquiries, and general questions. Chicago, Illinois."
   transparentNav={true}
 >
   <!-- ===== Hero =============================================
@@ -165,7 +165,7 @@ const inquiryTypes = [
           </div>
 
           <button class="action form__submit" type="submit">
-            Send enquiry <span class="action__arrow">→</span>
+            Send inquiry <span class="action__arrow">→</span>
           </button>
 
           <!-- Assertive rather than polite: this replaces the reader's last
@@ -236,7 +236,7 @@ const inquiryTypes = [
   const form = document.getElementById('contactForm');
   const status = document.getElementById('formStatus');
 
-  /* ARRIVING PRE-ROUTED. A reader who clicked "press enquiry" has already said
+  /* ARRIVING PRE-ROUTED. A reader who clicked "press inquiry" has already said
      what this is about, and asking again is asking twice. The page is
      prerendered, so the route is read here at runtime rather than at build.
      Without JS the form keeps its checked default — Investor Relations, the
